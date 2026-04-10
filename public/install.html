@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Install Safarnama on your phone</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #2e7d32;
+      --green-soft: #e8f5e9;
+      --text: #111110;
+      --muted: #666;
+      --border: #e8e6e1;
+      --bg: #fff;
+      --surface: #f7f6f3;
+    }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 0 60px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(160deg, #111110, #1a2a1a);
+      padding: 48px 28px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 120%, rgba(46,125,50,.3), transparent 70%);
+    }
+    .hero-logo {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      position: relative;
+      font-family: 'Nunito', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .hero-hindi {
+      position: relative;
+      font-size: 13px;
+      color: #2e7d32;
+      letter-spacing: .12em;
+      margin-bottom: 16px;
+    }
+    .hero-tagline {
+      position: relative;
+      font-size: 15px;
+      color: rgba(255,255,255,.65);
+      line-height: 1.6;
+      font-style: italic;
+      font-family: Georgia, serif;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 16px 8px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .tab-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+
+    /* Content */
+    .panel { display: none; padding: 28px 20px; }
+    .panel.active { display: block; }
+
+    /* Steps */
+    .step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-body {}
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+    .step-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .step-img {
+      margin-top: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* CTA button */
+    .cta {
+      display: block;
+      background: var(--green);
+      color: white;
+      text-align: center;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      margin: 8px 20px 28px;
+      letter-spacing: .01em;
+    }
+
+    /* Features */
+    .features {
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .feature {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .feature-icon {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .feature-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .feature-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding: 0 20px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 20px;
+    }
+
+    .tip {
+      background: var(--green-soft);
+      border-left: 3px solid var(--green);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #1b4020;
+      line-height: 1.6;
+      margin: 0 20px 20px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 24px 20px 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .footer a { color: var(--green); text-decoration: none; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-logo">
+      <svg width="64" height="64" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="36" cy="36" r="32" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+        <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="0.6"/>
+        <line x1="36" y1="4" x2="36" y2="10" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+        <line x1="36" y1="62" x2="36" y2="68" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+        <line x1="4" y1="36" x2="10" y2="36" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+        <line x1="62" y1="36" x2="68" y2="36" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+        <path d="M36,12 L30,33 L36,28 L42,33 Z" fill="#2e7d32"/>
+        <circle cx="36" cy="14" r="2.5" fill="#2e7d32"/>
+        <line x1="36" y1="16" x2="36" y2="28" stroke="rgba(255,255,255,.3)" stroke-width="0.8"/>
+        <path d="M36,60 L30,39 L36,44 L42,39 Z" fill="rgba(255,255,255,.3)"/>
+        <circle cx="36" cy="36" r="4.5" fill="rgba(255,255,255,.15)"/>
+        <circle cx="36" cy="36" r="2.2" fill="#2e7d32"/>
+      </svg>
+    </div>
+    <div class="hero-title">SAFARNAMA</div>
+    <div class="hero-hindi">सफ़रनामा · travel journal</div>
+    <div class="hero-tagline">Speak your travels.<br>We write your memoir.</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('iphone', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+      iPhone
+    </button>
+    <button class="tab-btn" onclick="showTab('android', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 16V8a7 7 0 0114 0v8"/><rect x="3" y="16" width="18" height="4" rx="1"/><line x1="8" y1="20" x2="8" y2="23"/><line x1="16" y1="20" x2="16" y2="23"/></svg>
+      Android
+    </button>
+    <button class="tab-btn" onclick="showTab('features', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Features
+    </button>
+  </div>
+
+  <!-- iPhone Panel -->
+  <div id="panel-iphone" class="panel active">
+    <div class="badge">Free · No account needed</div>
+    <p style="font-size:15px;color:var(--muted);margin-bottom:24px;line-height:1.6">Install Safarnama on your iPhone in 30 seconds — no App Store needed.</p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Open Safari</div>
+        <div class="step-desc">Must be Safari — not Chrome or any other browser. Tap the link below.</div>
+      </div>
+    </div>
+
+    <a class="cta" href="https://neha-rani-r.github.io/safarnama/">
+      Open Safarnama in Safari →
+    </a>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Tap the Share button</div>
+        <div class="step-desc">The Share button is the square with an arrow pointing up — at the bottom of your screen.</div>
+        <div class="step-img">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Look for this icon at the bottom of Safari
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Tap "Add to Home Screen"</div>
+        <div class="step-desc">Scroll down in the share sheet until you see "Add to Home Screen". Tap it.</div>
+        <div class="step-img">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          "Add to Home Screen" — with a + icon
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Tap Add</div>
+        <div class="step-desc">The name will show as "Safarnama". Tap Add in the top right corner. Done!</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      The compass icon will appear on your home screen. Tap it to open Safarnama — it works just like an app, with no browser bar.
+    </div>
+  </div>
+
+  <!-- Android Panel -->
+  <div id="panel-android" class="panel">
+    <div class="badge">Free · No Play Store needed</div>
+    <p style="font-size:15px;color:var(--muted);margin-bottom:24px;line-height:1.6">Install Safarnama on your Android phone in under a minute.</p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Open Chrome</div>
+        <div class="step-desc">Open Google Chrome on your Android phone and go to the link below.</div>
+      </div>
+    </div>
+
+    <a class="cta" href="https://neha-rani-r.github.io/safarnama/">
+      Open Safarnama in Chrome →
+    </a>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Tap the three dots menu</div>
+        <div class="step-desc">In the top right corner of Chrome, tap the three vertical dots ⋮</div>
+        <div class="step-img">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          Three dots at the top right corner
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Tap "Add to Home screen"</div>
+        <div class="step-desc">You'll see this option in the dropdown menu. Tap it.</div>
+        <div class="step-img">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          "Add to Home screen" option
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Tap Add</div>
+        <div class="step-desc">Confirm by tapping Add. The Safarnama icon appears on your home screen.</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      The compass icon will appear on your Android home screen. Tap it anytime to open Safarnama — it works offline too once loaded.
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">Prefer an APK file?</div>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;padding:0 20px 20px">
+      If someone sent you an APK file directly, enable "Install unknown apps" in your phone Settings → Security, then open the APK file to install.
+    </p>
+  </div>
+
+  <!-- Features Panel -->
+  <div id="panel-features" class="panel">
+    <div class="badge">What you get</div>
+    <p style="font-size:15px;color:var(--muted);margin-bottom:24px;line-height:1.6">A voice-first travel journal that turns your spoken memories into a literary memoir — shareable on Instagram, WhatsApp and more.</p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">◎</div>
+        <div class="feature-name">Voice journalling</div>
+        <div class="feature-desc">Speak and watch your words appear in real time</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">✦</div>
+        <div class="feature-name">7 prompts</div>
+        <div class="feature-desc">Sensory, food, human, discovery and more</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">◈</div>
+        <div class="feature-name">AI memoir</div>
+        <div class="feature-desc">Your words woven into poetic travel diary</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">◆</div>
+        <div class="feature-name">14 card styles</div>
+        <div class="feature-desc">Dark, light, golden, rose, sage and more</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">◉</div>
+        <div class="feature-name">Share as image</div>
+        <div class="feature-desc">Instagram, WhatsApp, Facebook, Messages</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">◐</div>
+        <div class="feature-name">Travel map</div>
+        <div class="feature-desc">Pins all your entries with GPS location</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">◑</div>
+        <div class="feature-name">Emotion tagging</div>
+        <div class="feature-desc">AI tags each entry — awe, joy, solitude...</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">✦</div>
+        <div class="feature-name">100% free</div>
+        <div class="feature-desc">No account, no subscription, no ads</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      Built by Neha Rani — Engineering Manager at HashedIn by Deloitte — as Month 3 of her Data Engineering Series of monthly apps.
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">Made for</div>
+    <p style="font-size:14px;color:var(--muted);line-height:1.8;padding:0 20px 20px">
+      Slow travellers · Solo explorers · Travel bloggers · Anyone who wants to remember how a place <em>felt</em>, not just where they went.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Safarnama सफ़रनामा</p>
+    <p>Built with ◈ by <a href="https://linkedin.com/in/neha-rani-r">Neha Rani</a></p>
+    <p style="margin-top:8px"><a href="https://neha-rani-r.github.io/safarnama/">Open the app →</a></p>
+  </div>
+
+  <script>
+    function showTab(id, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('panel-' + id).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>
