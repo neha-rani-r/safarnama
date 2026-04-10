@@ -316,48 +316,60 @@ OUTPUT: plain prose only. No headers. No bullet points. No hashtags.`,
   };
 
   // Capture card as image and share
-  const captureAndShare = async (shareTarget?: string) => {
+  const captureAndShare = async () => {
     if (!cardRef.current) return;
     setCapturing(true);
-    showToast('Preparing image...');
+    showToast('Capturing card...');
 
     try {
       const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#111110',
-        scale: 2, // retina quality
+        backgroundColor: theme.bg,
+        scale: 2,
         useCORS: true,
         logging: false,
+        allowTaint: true,
       });
 
       canvas.toBlob(async (blob) => {
         if (!blob) { showToast('Could not capture card'); setCapturing(false); return; }
         const file = new File([blob], 'safarnama-memoir.png', { type: 'image/png' });
 
-        // Try native share with image file (works on mobile)
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
+        // Try native share with file first (iOS Safari, Android Chrome)
+        try {
+          if (navigator.share) {
             await navigator.share({
               files: [file],
               title: `Safarnama — ${primaryLocation}`,
-              text: `📍 ${allLocations}\n\n#traveldiary #slowtravel`,
+              text: `📍 ${allLocations}\n\n#traveldiary #slowtravel #safarnama`,
             });
             showToast('Shared!');
-          } catch { /* cancelled */ }
-        } else {
-          // Fallback: download the image
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'safarnama-memoir.png';
-          a.click();
-          URL.revokeObjectURL(url);
-          showToast('Image saved — share from your photos');
+            setCapturing(false);
+            return;
+          }
+        } catch (e: unknown) {
+          // If share was cancelled by user, stop here
+          if (e instanceof Error && e.name === 'AbortError') {
+            setCapturing(false);
+            return;
+          }
+          // Otherwise fall through to download
         }
+
+        // Fallback: save image to device then user can share from photos
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'safarnama-memoir.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Image saved to your device — share from Photos');
         setCapturing(false);
       }, 'image/png');
     } catch {
-      showToast('Could not capture. Try copying text instead.');
+      showToast('Could not capture. Try Copy text instead.');
       setCapturing(false);
     }
   };

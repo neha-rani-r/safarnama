@@ -538,12 +538,18 @@ export default function ShareModal({ entry, onClose, showToast }: ShareModalProp
           <div style={{ fontFamily: 'var(--sans)', fontSize: 10, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
             Share this moment
           </div>
-          {supportsNativeShare ? (
+          {/* Native share sheet — opens all apps installed on phone */}
+          {supportsNativeShare && (
             <button
               onClick={async () => { try { await navigator.share({ title: `Safarnama — ${entry.location}`, text: shareText }); } catch {} }}
-              style={{ width: '100%', padding: '13px', background: '#111110', color: 'white', border: 'none', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--sans)', fontSize: 13, fontWeight: 500 }}
-            >Share ↗</button>
-          ) : (
+              style={{ width: '100%', padding: '13px', background: '#111110', color: 'white', border: 'none', borderRadius: 10, cursor: 'pointer', fontFamily: 'var(--sans)', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10 }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              Share to Instagram, WhatsApp, Messages...
+            </button>
+          )}
+          {/* Always show platform buttons too */}
+          {(
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <a href={`https://wa.me/?text=${encodedText}`} target="_blank" rel="noopener noreferrer"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px', background: '#25D366', color: 'white', borderRadius: 10, textDecoration: 'none', fontFamily: 'var(--sans)', fontSize: 12, fontWeight: 500 }}>
