@@ -12,6 +12,230 @@ const PROMPTS: Prompt[] = [
   { id: 'recommend',  icon: '◑', q: 'What would you tell someone who asked if they should come here?', why: 'Your verdict' },
 ];
 
+// Each memoir gets a unique hand-drawn SVG illustration based on entry themes
+function MemoirIllustration({ seed, locations }: { seed: number; locations: string[] }) {
+  const s = seed % 6;
+  const loc = locations[0] || '';
+  
+  // Pick illustration based on seed
+  const illustrations = [
+    // Mountains + moon
+    <svg key="0" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto' }}>
+      <defs>
+        <linearGradient id="sky0" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#0a0a0a"/>
+          <stop offset="100%" stopColor="#1a2a1a"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="200" fill="url(#sky0)"/>
+      {/* Stars */}
+      {[{x:40,y:20},{x:80,y:35},{x:130,y:15},{x:200,y:28},{x:260,y:12},{x:320,y:30},{x:370,y:18},{x:60,y:50},{x:170,y:42},{x:340,y:45}].map((s,i)=>(
+        <circle key={i} cx={s.x} cy={s.y} r={i%3===0?1.5:1} fill="#2e7d32" opacity={0.6+Math.random()*0.4}/>
+      ))}
+      {/* Moon */}
+      <circle cx="340" cy="40" r="22" fill="#f5f0e8" opacity="0.9"/>
+      <circle cx="350" cy="34" r="18" fill="#1a2a1a"/>
+      {/* Mountains back */}
+      <path d="M0,140 L60,70 L120,110 L180,50 L240,95 L300,60 L360,90 L400,70 L400,200 L0,200Z" fill="#0f1f0f" opacity="0.8"/>
+      {/* Mountains front */}
+      <path d="M0,170 L80,110 L140,145 L220,90 L280,130 L350,100 L400,120 L400,200 L0,200Z" fill="#0a150a"/>
+      {/* Snow caps */}
+      <path d="M180,50 L165,72 L195,72Z" fill="rgba(255,255,255,0.15)"/>
+      <path d="M300,60 L288,78 L312,78Z" fill="rgba(255,255,255,0.1)"/>
+      {/* Compass accent */}
+      <circle cx="50" cy="155" r="18" fill="none" stroke="#2e7d32" strokeWidth="1" opacity="0.4"/>
+      <path d="M50,140 L47,153 L50,150 L53,153Z" fill="#2e7d32" opacity="0.6"/>
+      {/* Location text */}
+      <text x="200" y="190" fontFamily="Georgia,serif" fontSize="11" fill="rgba(255,255,255,0.3)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+    
+    // Ocean waves + birds
+    <svg key="1" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto' }}>
+      <defs>
+        <linearGradient id="ocean1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#0d1f1a"/>
+          <stop offset="60%" stopColor="#0a2a20"/>
+          <stop offset="100%" stopColor="#051510"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="200" fill="url(#ocean1)"/>
+      {/* Stars */}
+      {[{x:30,y:25},{x:90,y:15},{x:160,y:30},{x:230,y:10},{x:310,y:22},{x:380,y:18}].map((s,i)=>(
+        <circle key={i} cx={s.x} cy={s.y} r="1.2" fill="#2e7d32" opacity="0.5"/>
+      ))}
+      {/* Moon reflection */}
+      <ellipse cx="200" cy="155" rx="4" ry="20" fill="rgba(245,240,232,0.08)"/>
+      <circle cx="200" cy="30" r="16" fill="#f5f0e8" opacity="0.85"/>
+      <circle cx="208" cy="25" r="13" fill="#0d1f1a"/>
+      {/* Waves */}
+      <path d="M0,120 Q50,108 100,120 Q150,132 200,120 Q250,108 300,120 Q350,132 400,120 L400,200 L0,200Z" fill="#0a2218" opacity="0.8"/>
+      <path d="M0,140 Q40,128 80,140 Q120,152 160,140 Q200,128 240,140 Q280,152 320,140 Q360,128 400,140 L400,200 L0,200Z" fill="#071810"/>
+      <path d="M-20,160 Q30,148 80,160 Q130,172 180,160 Q230,148 280,160 Q330,172 380,160 Q410,148 430,160" fill="none" stroke="#2e7d32" strokeWidth="1" opacity="0.3"/>
+      {/* Birds */}
+      <path d="M120,55 Q128,49 136,55" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M150,42 Q160,35 170,42" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M85,68 Q92,62 99,68" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2" strokeLinecap="round"/>
+      <path d="M200,50 Q209,43 218,50" fill="none" stroke="#2e7d32" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+      <text x="200" y="192" fontFamily="Georgia,serif" fontSize="11" fill="rgba(255,255,255,0.25)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // City at dusk
+    <svg key="2" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto' }}>
+      <defs>
+        <linearGradient id="dusk2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#0a0a12"/>
+          <stop offset="50%" stopColor="#1a0f08"/>
+          <stop offset="100%" stopColor="#0a0a0a"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="200" fill="url(#dusk2)"/>
+      {/* Horizon glow */}
+      <ellipse cx="200" cy="130" rx="180" ry="30" fill="#2e7d32" opacity="0.08"/>
+      {/* Buildings silhouette */}
+      <rect x="10" y="100" width="30" height="100" fill="#0a0a0a"/>
+      <rect x="15" y="80" width="20" height="30" fill="#0a0a0a"/>
+      <rect x="50" y="110" width="40" height="90" fill="#0f0f0f"/>
+      <rect x="55" y="90" width="30" height="25" fill="#0f0f0f"/>
+      <rect x="100" y="85" width="25" height="115" fill="#0a0a0a"/>
+      <rect x="135" y="105" width="35" height="95" fill="#0f0f0f"/>
+      <rect x="180" y="70" width="20" height="130" fill="#0a0a0a"/>
+      <rect x="210" y="90" width="45" height="110" fill="#0f0f0f"/>
+      <rect x="265" y="100" width="30" height="100" fill="#0a0a0a"/>
+      <rect x="305" y="85" width="40" height="115" fill="#0f0f0f"/>
+      <rect x="355" y="95" width="25" height="105" fill="#0a0a0a"/>
+      <rect x="375" y="80" width="25" height="120" fill="#0f0f0f"/>
+      {/* Windows */}
+      {[{x:18,y:105},{x:58,y:98},{x:58,y:115},{x:102,y:92},{x:102,y:110},{x:183,y:78},{x:183,y:95},{x:215,y:97},{x:235,y:97},{x:215,y:115},{x:270,y:108},{x:308,y:92},{x:330,y:105},{x:358,y:102}].map((w,i)=>(
+        <rect key={i} x={w.x} y={w.y} width="5" height="4" fill="#2e7d32" opacity={0.3+Math.random()*0.5} rx="0.5"/>
+      ))}
+      {/* Stars */}
+      {[{x:40,y:20},{x:80,y:10},{x:150,y:25},{x:220,y:8},{x:290,y:18},{x:350,y:12}].map((s,i)=>(
+        <circle key={i} cx={s.x} cy={s.y} r="1" fill="white" opacity="0.4"/>
+      ))}
+      {/* Moon */}
+      <circle cx="320" cy="30" r="14" fill="#f5f0e8" opacity="0.7"/>
+      <circle cx="327" cy="26" r="11" fill="#0a0a12"/>
+      <text x="200" y="193" fontFamily="Georgia,serif" fontSize="11" fill="rgba(255,255,255,0.2)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // Forest path
+    <svg key="3" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto' }}>
+      <defs>
+        <linearGradient id="forest3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#060d06"/>
+          <stop offset="100%" stopColor="#0a160a"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="200" fill="url(#forest3)"/>
+      {/* Light at end of path */}
+      <ellipse cx="200" cy="80" rx="60" ry="40" fill="#2e7d32" opacity="0.06"/>
+      <ellipse cx="200" cy="80" rx="30" ry="20" fill="#2e7d32" opacity="0.06"/>
+      {/* Trees left */}
+      <path d="M0,200 L30,80 L60,200Z" fill="#0a140a"/>
+      <path d="M20,200 L55,60 L90,200Z" fill="#0d180d"/>
+      <path d="M50,200 L80,90 L110,200Z" fill="#0a140a"/>
+      <path d="M10,200 L40,100 L70,200Z" fill="#071007"/>
+      {/* Trees right */}
+      <path d="M400,200 L370,80 L340,200Z" fill="#0a140a"/>
+      <path d="M380,200 L345,60 L310,200Z" fill="#0d180d"/>
+      <path d="M350,200 L320,90 L290,200Z" fill="#0a140a"/>
+      <path d="M390,200 L360,100 L330,200Z" fill="#071007"/>
+      {/* Path */}
+      <path d="M160,200 Q180,140 195,100 Q200,80 205,100 Q220,140 240,200Z" fill="#111a11"/>
+      {/* Stars through canopy */}
+      {[{x:200,y:15},{x:185,y:30},{x:215,y:25},{x:195,y:50},{x:205,y:45}].map((s,i)=>(
+        <circle key={i} cx={s.x} cy={s.y} r="1.5" fill="#2e7d32" opacity="0.7"/>
+      ))}
+      {/* Fireflies */}
+      {[{x:100,y:130},{x:130,y:110},{x:270,y:120},{x:300,y:140},{x:80,y:150}].map((f,i)=>(
+        <circle key={i} cx={f.x} cy={f.y} r="2" fill="#2e7d32" opacity="0.5"/>
+      ))}
+      <text x="200" y="193" fontFamily="Georgia,serif" fontSize="11" fill="rgba(255,255,255,0.2)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // Desert + stars
+    <svg key="4" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto' }}>
+      <defs>
+        <linearGradient id="desert4" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#05050f"/>
+          <stop offset="70%" stopColor="#0a0808"/>
+          <stop offset="100%" stopColor="#150e05"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="200" fill="url(#desert4)"/>
+      {/* Milky way band */}
+      <path d="M50,0 Q200,60 350,0" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="30"/>
+      {/* Stars */}
+      {Array.from({length:40}).map((_,i)=>({x:Math.sin(i*137)*190+200,y:Math.cos(i*97)*50+40})).map((s,i)=>(
+        <circle key={i} cx={s.x} cy={Math.max(5,Math.min(85,s.y))} r={i%7===0?2:i%3===0?1.5:1} fill="white" opacity={0.2+i%4*0.15}/>
+      ))}
+      {/* Dunes */}
+      <path d="M0,160 Q100,130 200,155 Q300,175 400,150 L400,200 L0,200Z" fill="#150e05"/>
+      <path d="M0,175 Q80,158 180,170 Q280,182 400,168 L400,200 L0,200Z" fill="#0f0a03"/>
+      {/* Cactus */}
+      <rect x="70" y="130" width="6" height="40" fill="#0d1a0d" rx="3"/>
+      <rect x="58" y="143" width="14" height="5" fill="#0d1a0d" rx="2"/>
+      <rect x="72" y="138" width="5" height="14" fill="#0d1a0d" rx="2"/>
+      {/* Cactus 2 */}
+      <rect x="320" y="125" width="5" height="45" fill="#0d1a0d" rx="2"/>
+      <rect x="310" y="138" width="12" height="4" fill="#0d1a0d" rx="2"/>
+      {/* Moon */}
+      <circle cx="200" cy="35" r="18" fill="#f5f0e8" opacity="0.8"/>
+      <circle cx="210" cy="29" r="14" fill="#05050f"/>
+      {/* Compass */}
+      <circle cx="350" cy="160" r="15" fill="none" stroke="#2e7d32" strokeWidth="0.8" opacity="0.3"/>
+      <path d="M350,148 L348,158 L350,156 L352,158Z" fill="#2e7d32" opacity="0.5"/>
+      <text x="200" y="194" fontFamily="Georgia,serif" fontSize="11" fill="rgba(255,255,255,0.2)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // Rooftop / terrace at night
+    <svg key="5" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 'auto' }}>
+      <defs>
+        <linearGradient id="roof5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#050510"/>
+          <stop offset="100%" stopColor="#0a0a18"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="200" fill="url(#roof5)"/>
+      {/* Stars */}
+      {[{x:50,y:20,r:1.5},{x:90,y:8,r:1},{x:140,y:25,r:2},{x:200,y:12,r:1.5},{x:260,y:20,r:1},{x:310,y:15,r:2},{x:360,y:25,r:1.5},{x:70,y:45,r:1},{x:170,y:38,r:1.5},{x:330,y:40,r:1}].map((s,i)=>(
+        <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="white" opacity={0.3+i%3*0.2}/>
+      ))}
+      {/* Planet / Venus */}
+      <circle cx="300" cy="30" r="4" fill="#f5f0e8" opacity="0.6"/>
+      {/* Moon */}
+      <circle cx="80" cy="35" r="20" fill="#f5f0e8" opacity="0.75"/>
+      <circle cx="90" cy="28" r="16" fill="#050510"/>
+      {/* Terrace floor */}
+      <rect x="0" y="155" width="400" height="45" fill="#0d0d1a"/>
+      {/* Railing */}
+      <line x1="0" y1="158" x2="400" y2="158" stroke="#1a1a2a" strokeWidth="2"/>
+      {[0,40,80,120,160,200,240,280,320,360,400].map((x,i)=>(
+        <line key={i} x1={x} y1="158" x2={x} y2="185" stroke="#141422" strokeWidth="1.5"/>
+      ))}
+      {/* Lanterns */}
+      <ellipse cx="150" cy="155" rx="8" ry="10" fill="#2e7d32" opacity="0.15"/>
+      <circle cx="150" cy="150" r="4" fill="#2e7d32" opacity="0.3"/>
+      <ellipse cx="260" cy="155" rx="8" ry="10" fill="#2e7d32" opacity="0.12"/>
+      <circle cx="260" cy="150" r="4" fill="#2e7d32" opacity="0.25"/>
+      {/* Table */}
+      <ellipse cx="200" cy="175" rx="35" ry="8" fill="#0f0f20"/>
+      <line x1="200" y1="175" x2="200" y2="200" stroke="#0f0f20" strokeWidth="4"/>
+      {/* Cup */}
+      <rect x="192" y="162" width="12" height="10" fill="#1a1a30" rx="1"/>
+      {/* City horizon */}
+      <path d="M0,155 L20,130 L35,145 L60,115 L75,130 L100,120 L115,138 L140,125 L155,140 L400,140 L400,155Z" fill="#08081a"/>
+      {/* City lights */}
+      {[{x:65,y:118},{x:102,y:122},{x:142,y:127},{x:25,y:133}].map((w,i)=>(
+        <rect key={i} x={w.x} y={w.y} width="3" height="2" fill="#2e7d32" opacity="0.4" rx="0.5"/>
+      ))}
+      <text x="200" y="197" fontFamily="Georgia,serif" fontSize="10" fill="rgba(255,255,255,0.2)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+  ];
+
+  return illustrations[s];
+}
+
 interface MemoirViewProps {
   entries: Entry[];
   showToast: (msg: string) => void;
@@ -21,201 +245,299 @@ export default function MemoirView({ entries, showToast }: MemoirViewProps) {
   const [memoir, setMemoir] = useState('');
   const [memoirLoading, setMemoirLoading] = useState(false);
   const [memoirOpen, setMemoirOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [selectMode, setSelectMode] = useState(false);
+  const [illustrationSeed, setIllustrationSeed] = useState(0);
+  const [showShareCard, setShowShareCard] = useState(false);
+
+  const toggleEntry = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const entriesToUse = selectMode && selectedIds.size > 0
+    ? entries.filter(e => selectedIds.has(e.id))
+    : entries;
+
+  const locations = entriesToUse.map(e => e.location);
 
   const generateMemoir = async () => {
-    if (entries.length === 0) {
-      showToast('Add some entries first');
-      return;
-    }
+    if (entries.length === 0) { showToast('Add some entries first'); return; }
+    if (entriesToUse.length === 0) { showToast('Select at least one entry'); return; }
+
     setMemoirOpen(true);
     setMemoirLoading(true);
     setMemoir('');
+    setShowShareCard(false);
+    setIllustrationSeed(Date.now() % 6);
 
-    const entrySummary = entries
-      .slice(0, 6)
-      .map((e) => {
-        const prompt = PROMPTS.find((p) => p.id === e.prompt);
-        return `[${e.location}, ${e.date}]\nPrompt: "${prompt?.q}"\nEntry: ${e.text}`;
-      })
-      .join('\n\n---\n\n');
+    const entrySummary = entriesToUse.slice(0, 8).map((e) => {
+      const prompt = PROMPTS.find((p) => p.id === e.prompt);
+      return `Location: ${e.location} (${e.date})\nQuestion: "${prompt?.q}"\nMy words: ${e.text}`;
+    }).join('\n\n---\n\n');
 
     try {
       const text = await callClaude({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `You are a literary travel memoir writer for Safarnama — a travel journaling app for slow travellers who experience the world deeply. You write in a lyrical, sensory, first-person voice — like Pico Iyer or Patrick Leigh Fermor.
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 800,
+        system: `You write intimate, literary travel memoir — not travel blog content. Think Pico Iyer, Olivia Laing, Rebecca Solnit.
 
-Given a traveller's raw journal entries, synthesise them into a short memoir passage (250-350 words) that captures the emotional truth of their travels.
+Use the traveller's EXACT words and images. If they said "melted wax" keep "melted wax". Never replace their language with generic travel writing.
 
-Write as if you are the traveller. Use specific details from their entries. Focus on atmosphere, feeling, and what it means to move through the world this way.
+Voice: first person, letter-to-a-close-friend warmth. Specific, sensory, honest.
+Length: 200-280 words.
+Structure: no headers, no sections. One flowing piece.
+End: a single sentence about what this journey did to them as a person — not a summary, a revelation.
 
-Do NOT use generic travel writing clichés. Make it feel intimate and real. End with a single sentence that captures what travel does to a person.`,
-        messages: [
-          {
-            role: 'user',
-            content: `Here are my recent travel journal entries. Please synthesise them into a personal memoir passage:\n\n${entrySummary}`,
-          },
-        ],
+BANNED words: vibrant, bustling, hidden gem, off the beaten path, tapestry, mosaic, wanderlust, journey of self-discovery, breathtaking, stunning.`,
+        messages: [{ role: 'user', content: `My journal entries:\n\n${entrySummary}\n\nWrite my memoir.` }],
       });
       setMemoir(text || 'Could not generate memoir. Please try again.');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Unknown error';
-      if (msg.includes('VITE_CLOUDFLARE_WORKER_URL not set')) {
-        showToast('Configure VITE_CLOUDFLARE_WORKER_URL to use AI features');
-        setMemoir('AI proxy not configured. Set VITE_CLOUDFLARE_WORKER_URL in your .env file.');
-      } else {
-        setMemoir('Something went wrong. Check your connection and try again.');
-      }
+      const msg = err instanceof Error ? err.message : '';
+      setMemoir(msg.includes('VITE_CLOUDFLARE') ? 'AI proxy not configured.' : 'Something went wrong. Try again.');
     } finally {
       setMemoirLoading(false);
     }
   };
 
-  const STARS = [
-    { top: '12%', left: '4%',  size: 2.5, dur: '2.8s', delay: '0s'   },
-    { top: '65%', left: '10%', size: 2,   dur: '3.5s', delay: '0.4s' },
-    { top: '25%', left: '80%', size: 3,   dur: '2.2s', delay: '0.9s' },
-    { top: '72%', left: '90%', size: 2,   dur: '3.8s', delay: '0.2s' },
-    { top: '8%',  left: '55%', size: 2.5, dur: '2.5s', delay: '1.1s' },
-    { top: '85%', left: '42%', size: 2,   dur: '4s',   delay: '0.6s' },
-    { top: '40%', left: '94%', size: 2.5, dur: '3.2s', delay: '1.4s' },
-    { top: '18%', left: '28%', size: 2,   dur: '2.9s', delay: '0.3s' },
-    { top: '55%', left: '65%', size: 2.2, dur: '3.6s', delay: '0.7s' },
-    { top: '90%', left: '20%', size: 2,   dur: '3s',   delay: '1.2s' },
-  ];
+  const primaryLocation = entriesToUse[0]?.location || '';
 
   return (
     <div>
-      <div style={{ marginBottom: 32, position: 'relative' }}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-          {STARS.map((s, i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: s.top,
-                left: s.left,
-                width: s.size,
-                height: s.size,
-                borderRadius: '50%',
-                background: '#2e7d32',
-                animation: `starFloat ${s.dur} ease-in-out infinite ${s.delay}`,
-              }}
-            />
-          ))}
+      {/* Hero header */}
+      <div style={{ marginBottom: 40, textAlign: 'center', padding: '40px 0 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+          <svg width="48" height="48" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" className="compass-needle" style={{ transformOrigin: '36px 36px' }}>
+            <circle cx="36" cy="36" r="32" fill="none" stroke="#e8e6e1" strokeWidth="2"/>
+            <circle cx="36" cy="36" r="28" fill="none" stroke="#e8e6e1" strokeWidth="0.5" opacity="0.5"/>
+            <line x1="36" y1="4" x2="36" y2="10" stroke="#1a1a1a" strokeWidth="1.5" opacity="0.4"/>
+            <line x1="36" y1="62" x2="36" y2="68" stroke="#1a1a1a" strokeWidth="1.5" opacity="0.4"/>
+            <line x1="4" y1="36" x2="10" y2="36" stroke="#1a1a1a" strokeWidth="1.5" opacity="0.4"/>
+            <line x1="62" y1="36" x2="68" y2="36" stroke="#1a1a1a" strokeWidth="1.5" opacity="0.4"/>
+            <path d="M36,12 L30,33 L36,28 L42,33 Z" fill="#2e7d32"/>
+            <circle cx="36" cy="14" r="2.5" fill="#2e7d32"/>
+            <path d="M36,60 L30,39 L36,44 L42,39 Z" fill="#1a1a1a" opacity="0.4"/>
+            <circle cx="36" cy="36" r="4" fill="#1a1a1a"/>
+            <circle cx="36" cy="36" r="2" fill="#2e7d32"/>
+          </svg>
         </div>
-        <svg
-          width="100%"
-          height="32"
-          viewBox="0 0 400 32"
-          preserveAspectRatio="xMidYMid meet"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ marginBottom: 16, display: 'block' }}
-        >
-          <path d="M80,20 Q90,14 100,20" fill="none" stroke="#2e7d32" strokeWidth="1.8" strokeLinecap="round" className="bird-float" opacity="0.5" />
-          <path d="M115,12 Q127,5 139,12" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" className="bird-float-delay" opacity="0.65" />
-          <path d="M155,18 Q164,12 173,18" fill="none" stroke="#1a1a1a" strokeWidth="1.6" strokeLinecap="round" className="bird-float" opacity="0.3" />
-          <path d="M190,8 Q201,1 212,8" fill="none" stroke="#2e7d32" strokeWidth="2.2" strokeLinecap="round" className="bird-float-delay" opacity="0.7" />
-          <path d="M230,16 Q238,10 246,16" fill="none" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" className="bird-float" opacity="0.25" />
-          <path d="M262,6 Q274,0 286,6" fill="none" stroke="#2e7d32" strokeWidth="2" strokeLinecap="round" className="bird-float-delay" opacity="0.55" />
-          <path d="M305,14 Q313,8 321,14" fill="none" stroke="#1a1a1a" strokeWidth="1.6" strokeLinecap="round" className="bird-float" opacity="0.2" />
-        </svg>
-        <div
-          style={{
-            fontFamily: 'var(--serif)',
-            fontSize: 28,
-            fontWeight: 300,
-            fontStyle: 'italic',
-            marginBottom: 8,
-          }}
-        >
-          Your travel memoir, written by AI
+        <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 32, fontWeight: 400, fontStyle: 'italic', color: 'var(--text)', marginBottom: 8, lineHeight: 1.2 }}>
+          Your Memoir
         </div>
-        <div
-          style={{
-            fontFamily: 'var(--sans)',
-            fontSize: 11,
-            color: 'var(--muted)',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Synthesised from {entries.length} journal {entries.length === 1 ? 'entry' : 'entries'}
+        <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          {entries.length} {entries.length === 1 ? 'moment' : 'moments'} · written in your voice
         </div>
       </div>
 
-      <button className="memoir-trigger" onClick={generateMemoir}>
-        <div>
-          <div className="memoir-title">
-            {memoir ? 'Regenerate memoir' : 'Generate my memoir'}
+      {/* Entry selector */}
+      {entries.length > 1 && (
+        <div style={{ marginBottom: 24 }}>
+          <button
+            onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
+            style={{
+              fontFamily: 'var(--sans)', fontSize: 12, fontWeight: 500,
+              background: selectMode ? '#111110' : 'transparent',
+              color: selectMode ? '#fff' : 'var(--muted)',
+              border: '1px solid var(--border)',
+              padding: '8px 18px', borderRadius: 100, cursor: 'pointer', transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', gap: 8
+            }}
+          >
+            <span>{selectMode ? '✕' : '◈'}</span>
+            {selectMode ? 'Cancel' : 'Choose which entries to include'}
+          </button>
+          {selectMode && selectedIds.size > 0 && (
+            <div style={{ marginTop: 8, fontFamily: 'var(--sans)', fontSize: 11, color: '#2e7d32', fontWeight: 500 }}>
+              {selectedIds.size} {selectedIds.size === 1 ? 'entry' : 'entries'} selected
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Entry selection list */}
+      {selectMode && (
+        <div style={{ marginBottom: 28, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {entries.map((entry) => {
+            const selected = selectedIds.has(entry.id);
+            const prompt = PROMPTS.find(p => p.id === entry.prompt);
+            return (
+              <button key={entry.id} onClick={() => toggleEntry(entry.id)} style={{
+                display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px',
+                border: `1.5px solid ${selected ? '#2e7d32' : 'var(--border)'}`,
+                background: selected ? '#f0f7f0' : 'var(--surface)',
+                borderRadius: 10, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', width: '100%',
+              }}>
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%',
+                  border: `2px solid ${selected ? '#2e7d32' : '#ccc'}`,
+                  background: selected ? '#2e7d32' : 'transparent',
+                  flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s'
+                }}>
+                  {selected && <svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 3, flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 15, fontStyle: 'italic', color: 'var(--text)' }}>{entry.location}</span>
+                    <span style={{ fontFamily: 'var(--sans)', fontSize: 10, color: '#2e7d32', background: '#e8f5e9', padding: '1px 8px', borderRadius: 100, textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>{prompt?.why}</span>
+                  </div>
+                  <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 13, color: 'var(--text)', opacity: 0.65, lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' as const }}>
+                    {entry.text}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Generate CTA */}
+      <button
+        onClick={generateMemoir}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '22px 28px',
+          background: 'linear-gradient(135deg, #111110 0%, #1a2a1a 100%)',
+          border: 'none', borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s', marginBottom: 4,
+          boxShadow: '0 4px 24px rgba(46,125,50,0.12)',
+        }}
+      >
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, fontStyle: 'italic', color: '#fff', marginBottom: 4 }}>
+            {memoir ? 'Write a new version' : 'Generate my memoir'}
           </div>
-          <div className="memoir-sub">
-            {memoir
-              ? 'Create a new synthesis from your entries'
-              : 'Let AI find the poetry in your observations'}
+          <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'rgba(255,255,255,0.45)', fontWeight: 300 }}>
+            {selectMode && selectedIds.size > 0 ? `from ${selectedIds.size} selected entries` : `from all ${entriesToUse.length} entries`}
           </div>
         </div>
-        <span style={{ fontSize: 18, color: 'var(--muted)' }}>→</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <svg width="28" height="28" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="36" cy="36" r="30" fill="none" stroke="#2e7d32" strokeWidth="2.5"/>
+            <path d="M36,14 L30,32 L36,28 L42,32 Z" fill="#2e7d32"/>
+            <circle cx="36" cy="14" r="3" fill="#2e7d32"/>
+            <path d="M36,58 L30,40 L36,44 L42,40 Z" fill="rgba(255,255,255,0.3)"/>
+            <circle cx="36" cy="36" r="4" fill="rgba(255,255,255,0.2)"/>
+            <circle cx="36" cy="36" r="2" fill="#2e7d32"/>
+          </svg>
+        </div>
       </button>
 
+      {/* Output */}
       {memoirOpen && (
-        <div className="memoir-output">
+        <div style={{ marginTop: 16, animation: 'fadeUp 0.5s ease' }}>
           {memoirLoading ? (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 20,
-                padding: '20px 0',
-              }}
-            >
-              <svg width="64" height="64" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="36" cy="36" r="32" fill="none" stroke="#e8e6e1" strokeWidth="2" />
-                <circle cx="36" cy="36" r="28" fill="none" stroke="#e8e6e1" strokeWidth="0.6" opacity="0.5" />
-                <line x1="36" y1="4" x2="36" y2="10" stroke="#1a1a1a" strokeWidth="2" opacity="0.3" />
-                <line x1="36" y1="62" x2="36" y2="68" stroke="#1a1a1a" strokeWidth="2" opacity="0.3" />
-                <line x1="4" y1="36" x2="10" y2="36" stroke="#1a1a1a" strokeWidth="2" opacity="0.3" />
-                <line x1="62" y1="36" x2="68" y2="36" stroke="#1a1a1a" strokeWidth="2" opacity="0.3" />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, padding: '60px 20px', background: 'var(--surface)', borderRadius: 16 }}>
+              <svg width="52" height="52" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="36" cy="36" r="32" fill="none" stroke="#e8e6e1" strokeWidth="2"/>
                 <g className="compass-needle-spin">
-                  <path d="M36,12 L30,33 L36,28 L42,33 Z" fill="#2e7d32" />
-                  <circle cx="36" cy="14" r="2.5" fill="#2e7d32" />
-                  <path d="M36,60 L30,39 L36,44 L42,39 Z" fill="#1a1a1a" opacity="0.3" />
+                  <path d="M36,12 L30,33 L36,28 L42,33 Z" fill="#2e7d32"/>
+                  <circle cx="36" cy="14" r="2.5" fill="#2e7d32"/>
+                  <path d="M36,60 L30,39 L36,44 L42,39 Z" fill="#1a1a1a" opacity="0.3"/>
                 </g>
-                <circle cx="36" cy="36" r="4" fill="#1a1a1a" />
-                <circle cx="36" cy="36" r="2" fill="#2e7d32" />
+                <circle cx="36" cy="36" r="4" fill="#1a1a1a"/>
+                <circle cx="36" cy="36" r="2" fill="#2e7d32"/>
               </svg>
-              <div
-                style={{
-                  fontFamily: 'var(--serif)',
-                  fontSize: 16,
-                  fontStyle: 'italic',
-                  color: 'var(--muted)',
-                  textAlign: 'center',
-                  lineHeight: 1.6,
-                }}
-              >
-                Writing your safarnama...
-                <br />
-                <span style={{ fontSize: 12, opacity: 0.6 }}>
-                  finding the poetry in your observations
-                </span>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 17, fontStyle: 'italic', color: 'var(--text)', marginBottom: 6 }}>Writing your safarnama...</div>
+                <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--muted)' }}>finding the poetry in your words</div>
               </div>
             </div>
           ) : (
             <div>
-              <div className="memoir-text">{memoir}</div>
-              <div style={{ marginTop: 24, display: 'flex', gap: 10 }}>
-                <button
-                  className="modal-action-btn primary"
-                  style={{ fontFamily: 'var(--sans)', fontSize: 12, fontWeight: 500, background: 'var(--text)', color: 'var(--bg)', border: 'none', padding: '9px 18px', borderRadius: 6, cursor: 'pointer' }}
-                  onClick={() => {
-                    navigator.clipboard.writeText(memoir);
-                  }}
-                >
-                  Copy memoir
-                </button>
+              {/* Illustration */}
+              <div style={{ borderRadius: '16px 16px 0 0', overflow: 'hidden', lineHeight: 0 }}>
+                <MemoirIllustration seed={illustrationSeed} locations={locations} />
               </div>
+
+              {/* Memoir text card */}
+              <div style={{
+                background: '#111110', borderRadius: '0 0 16px 16px',
+                padding: '32px 28px 28px',
+                borderTop: '3px solid #2e7d32',
+              }}>
+                {/* Location badge */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                  <svg width="14" height="14" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="36" cy="36" r="30" fill="none" stroke="#2e7d32" strokeWidth="3"/>
+                    <path d="M36,14 L30,32 L36,28 L42,32 Z" fill="#2e7d32"/>
+                    <circle cx="36" cy="36" r="4" fill="#2e7d32"/>
+                  </svg>
+                  <span style={{ fontFamily: 'var(--sans)', fontSize: 11, color: '#2e7d32', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 500 }}>
+                    {primaryLocation}
+                  </span>
+                </div>
+
+                {/* Memoir text */}
+                <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 16, fontWeight: 400, lineHeight: 2, color: 'rgba(255,255,255,0.85)', whiteSpace: 'pre-wrap', marginBottom: 28 }}>
+                  {memoir}
+                </div>
+
+                {/* Footer */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16 }}>
+                  <div>
+                    <div style={{ fontFamily: 'var(--sans)', fontSize: 13, fontWeight: 900, letterSpacing: '0.12em', color: '#2e7d32' }}>SAFARNAMA</div>
+                    <div style={{ fontFamily: 'var(--sans)', fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>सफ़रनामा · travel journal</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(memoir); showToast('Copied to clipboard'); }}
+                      style={{ fontFamily: 'var(--sans)', fontSize: 11, fontWeight: 500, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.12)', padding: '7px 14px', borderRadius: 6, cursor: 'pointer' }}
+                    >
+                      Copy
+                    </button>
+                    <button
+                      onClick={() => setShowShareCard(!showShareCard)}
+                      style={{ fontFamily: 'var(--sans)', fontSize: 11, fontWeight: 500, background: '#2e7d32', color: 'white', border: 'none', padding: '7px 14px', borderRadius: 6, cursor: 'pointer' }}
+                    >
+                      Share ↗
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Share options */}
+              {showShareCard && (
+                <div style={{ marginTop: 12, padding: '20px', background: 'var(--surface)', borderRadius: 12, animation: 'fadeUp 0.2s ease' }}>
+                  <div style={{ fontFamily: 'var(--sans)', fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>Share your memoir</div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(`${memoir}\n\n— from my Safarnama सफ़रनामा`)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 16px', background: '#25D366', color: 'white', borderRadius: 8, textDecoration: 'none', fontFamily: 'var(--sans)', fontSize: 12, fontWeight: 500 }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                      WhatsApp
+                    </a>
+                    <a
+                      href={`https://www.instagram.com/`}
+                      target="_blank" rel="noopener noreferrer"
+                      onClick={() => { navigator.clipboard.writeText(memoir); showToast('Memoir copied — paste in Instagram caption'); }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 16px', background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', color: 'white', borderRadius: 8, textDecoration: 'none', fontFamily: 'var(--sans)', fontSize: 12, fontWeight: 500 }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                      Instagram
+                    </a>
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(memoir.slice(0, 240) + '...\n\n— Safarnama सफ़रनामा')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 16px', background: '#000', color: 'white', borderRadius: 8, textDecoration: 'none', fontFamily: 'var(--sans)', fontSize: 12, fontWeight: 500 }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+                      X
+                    </a>
+                    <button
+                      onClick={generateMemoir}
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: 'transparent', color: 'var(--muted)', border: '1px solid var(--border)', borderRadius: 8, cursor: 'pointer', fontFamily: 'var(--sans)', fontSize: 12 }}
+                    >
+                      ↺ New version
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -224,9 +546,7 @@ Do NOT use generic travel writing clichés. Make it feel intimate and real. End 
       {!memoirOpen && entries.length === 0 && (
         <div className="empty" style={{ paddingTop: 40 }}>
           <div className="empty-text">No entries yet.</div>
-          <div className="empty-sub">
-            Add journal entries first, then generate your memoir.
-          </div>
+          <div className="empty-sub">Write a few journal entries, then come back here.</div>
         </div>
       )}
     </div>

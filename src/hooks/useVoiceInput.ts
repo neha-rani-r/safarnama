@@ -8,7 +8,7 @@ interface UseVoiceInputOptions {
 export function useVoiceInput({ onTranscript, showToast }: UseVoiceInputOptions) {
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<InstanceType<typeof window.SpeechRecognition> | null>(null);
-  const transcriptRef = useRef('');
+  const accumulatedRef = useRef(''); // holds all finalized text across pause/resume sessions
 
   const startRecording = useCallback(() => {
     const SpeechRecognition =
@@ -16,27 +16,25 @@ export function useVoiceInput({ onTranscript, showToast }: UseVoiceInputOptions)
       (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      showToast('Voice not supported in this browser. Try Chrome.');
+      showToast('Voice not supported. Use Chrome.');
       return;
     }
 
-    transcriptRef.current = '';
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
-    recognition.interimResults = true;
+    recognition.interimResults = false; // only fire when a sentence is final
     recognition.lang = 'en-US';
 
     recognition.onresult = (e: SpeechRecognitionEvent) => {
-      // Only append final results to avoid duplicates
-      let finalTranscript = '';
+      let newFinal = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) {
-          finalTranscript += e.results[i][0].transcript;
+          newFinal += e.results[i][0].transcript.trim() + ' ';
         }
       }
-      if (finalTranscript) {
-        transcriptRef.current += (transcriptRef.current ? ' ' : '') + finalTranscript.trim();
-        onTranscript(transcriptRef.current);
+      if (newFinal) {
+        accumulatedRef.current = (accumulatedRef.current + newFinal).trim();
+        onTranscript(accumulatedRef.current);
       }
     };
 
@@ -44,16 +42,26 @@ export function useVoiceInput({ onTranscript, showToast }: UseVoiceInputOptions)
       if (e.error !== 'aborted') showToast(`Voice error: ${e.error}`);
       setIsRecording(false);
     };
+
     recognition.onend = () => setIsRecording(false);
+
     recognition.start();
     recognitionRef.current = recognition;
     setIsRecording(true);
   }, [onTranscript, showToast]);
 
   const stopRecording = useCallback(() => {
-    if (recognitionRef.current) recognitionRef.current.stop();
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
     setIsRecording(false);
   }, []);
 
-  return { isRecording, startRecording, stopRecording };
+  // Call this when entry is saved to fully reset
+  const resetTranscript = useCallback(() => {
+    accumulatedRef.current = '';
+  }, []);
+
+  return { isRecording, startRecording, stopRecording, resetTranscript };
 }

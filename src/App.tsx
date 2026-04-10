@@ -565,9 +565,9 @@ export default function App() {
 
   const { getPosition } = useGeoLocation();
 
-  const { isRecording, startRecording, stopRecording } = useVoiceInput({
+  const { isRecording, startRecording, stopRecording, resetTranscript } = useVoiceInput({
     onTranscript: (text) => {
-      setEntryText((prev) => prev + (prev ? ' ' : '') + text);
+      setEntryText(text);
     },
     showToast,
   });
@@ -577,6 +577,9 @@ export default function App() {
       showToast('Add a location and your entry first');
       return;
     }
+
+    // Stop voice recording if active
+    if (isRecording) stopRecording();
 
     const coords = await getPosition();
     const newEntry: Entry = {
@@ -590,6 +593,7 @@ export default function App() {
     };
 
     setEntries((prev) => [newEntry, ...prev]);
+    resetTranscript();
     setEntryText('');
     setLocation('');
     showToast('Entry saved ✓');
@@ -726,13 +730,20 @@ export default function App() {
                 />
 
                 <div className="entry-actions">
-                  <button
-                    className={`voice-btn ${isRecording ? 'recording' : ''}`}
-                    onClick={isRecording ? stopRecording : startRecording}
-                  >
-                    <span className={`mic-dot ${isRecording ? 'recording' : ''}`} />
-                    {isRecording ? 'Stop recording' : 'Speak your entry'}
-                  </button>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <button
+                      className={`voice-btn ${isRecording ? 'recording' : ''}`}
+                      onClick={isRecording ? stopRecording : startRecording}
+                    >
+                      <span className={`mic-dot ${isRecording ? 'recording' : ''}`} />
+                      {isRecording ? 'Pause' : entryText.length > 0 ? 'Continue speaking' : 'Speak your entry'}
+                    </button>
+                    {entryText.length > 0 && !isRecording && (
+                      <span style={{ fontFamily: 'var(--sans)', fontSize: 11, color: 'var(--muted)' }}>
+                        ◈ tap to continue
+                      </span>
+                    )}
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <span className="char-count">{entryText.length} chars</span>
                     <button
