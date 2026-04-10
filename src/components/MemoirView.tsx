@@ -13,9 +13,166 @@ const PROMPTS: Prompt[] = [
 ];
 
 // Animated illustrations
-function MemoirIllustration({ seed, locations }: { seed: number; locations: string[] }) {
+function MemoirIllustration({ seed, locations, light = false }: { seed: number; locations: string[]; light?: boolean }) {
   const s = seed % 6;
   const loc = locations[0] || '';
+
+  // Light / daytime illustrations
+  const lightIllustrations = [
+    // 0: Sunrise mountains
+    <svg key="l0" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%',height:'auto' }}>
+      <defs><linearGradient id="ls0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fff8e1"/><stop offset="50%" stopColor="#ffe0b2"/><stop offset="100%" stopColor="#ffccbc"/></linearGradient><style>{`.ls0b{animation:lsBd 3s ease-in-out infinite}.ls0c{animation:lsCl 6s ease-in-out infinite}@keyframes lsBd{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes lsCl{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}`}</style></defs>
+      <rect width="400" height="200" fill="url(#ls0)"/>
+      {/* Sun */}
+      <circle cx="200" cy="90" r="35" fill="#ffb300" opacity=".3"/>
+      <circle cx="200" cy="90" r="24" fill="#ffca28" opacity=".5"/>
+      <circle cx="200" cy="90" r="16" fill="#ffd54f" opacity=".8"/>
+      {/* Sun rays */}
+      {[0,45,90,135,180,225,270,315].map((a,i)=>(<line key={i} x1={200+22*Math.cos(a*Math.PI/180)} y1={90+22*Math.sin(a*Math.PI/180)} x2={200+38*Math.cos(a*Math.PI/180)} y2={90+38*Math.sin(a*Math.PI/180)} stroke="#ffd54f" strokeWidth="2" opacity=".5"/>))}
+      {/* Mountains */}
+      <path d="M0,145 L60,70 L120,110 L180,55 L240,100 L300,65 L360,95 L400,75 L400,200 L0,200Z" fill="#bf8040" opacity=".25"/>
+      <path d="M0,168 L70,115 L130,145 L210,95 L270,130 L340,105 L400,125 L400,200 L0,200Z" fill="#8b5a2b" opacity=".2"/>
+      {/* Snow caps light */}
+      <path d="M180,55 L170,73 L190,73Z" fill="white" opacity=".6"/>
+      <path d="M300,65 L292,80 L308,80Z" fill="white" opacity=".5"/>
+      {/* Birds */}
+      <g className="ls0b"><path d="M100,70 Q108,64 116,70" fill="none" stroke="#5d4037" strokeWidth="1.5" strokeLinecap="round" opacity=".5"/></g>
+      <g className="ls0b" style={{animationDelay:'.6s'}}><path d="M130,58 Q139,52 148,58" fill="none" stroke="#5d4037" strokeWidth="1.5" strokeLinecap="round" opacity=".4"/></g>
+      <g className="ls0b" style={{animationDelay:'1.2s'}}><path d="M165,75 Q172,69 179,75" fill="none" stroke="#5d4037" strokeWidth="1.2" strokeLinecap="round" opacity=".35"/></g>
+      {/* Clouds */}
+      <g className="ls0c"><ellipse cx="80" cy="45" rx="28" ry="12" fill="white" opacity=".6"/><ellipse cx="98" cy="40" rx="20" ry="10" fill="white" opacity=".5"/></g>
+      <g className="ls0c" style={{animationDelay:'2s'}}><ellipse cx="320" cy="50" rx="24" ry="10" fill="white" opacity=".5"/><ellipse cx="340" cy="45" rx="18" ry="8" fill="white" opacity=".4"/></g>
+      <text x="200" y="193" fontFamily="Georgia,serif" fontSize="11" fill="rgba(90,50,20,.35)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // 1: Golden ocean
+    <svg key="l1" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%',height:'auto' }}>
+      <defs><linearGradient id="lo1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#e3f2fd"/><stop offset="40%" stopColor="#fff8e1"/><stop offset="100%" stopColor="#ffe0b2"/></linearGradient><style>{`.lo1w{animation:lo1W 4s ease-in-out infinite}.lo1b{animation:lo1B 3s ease-in-out infinite}@keyframes lo1W{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes lo1B{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}`}</style></defs>
+      <rect width="400" height="200" fill="url(#lo1)"/>
+      {/* Sun on horizon */}
+      <ellipse cx="200" cy="100" rx="180" ry="25" fill="#ffca28" opacity=".12"/>
+      <circle cx="200" cy="100" r="20" fill="#ffb300" opacity=".7"/>
+      <circle cx="200" cy="100" r="14" fill="#ffd54f" opacity=".9"/>
+      {/* Sun reflection on water */}
+      <ellipse cx="200" cy="148" rx="5" ry="18" fill="#ffca28" opacity=".25"/>
+      {/* Ocean */}
+      <g className="lo1w"><path d="M0,118 Q50,108 100,118 Q150,128 200,118 Q250,108 300,118 Q350,128 400,118 L400,200 L0,200Z" fill="#81d4fa" opacity=".45"/></g>
+      <g className="lo1w" style={{animationDelay:'1s'}}><path d="M0,135 Q40,125 80,135 Q120,145 160,135 Q200,125 240,135 Q280,145 320,135 Q360,125 400,135 L400,200 L0,200Z" fill="#4fc3f7" opacity=".35"/></g>
+      <path d="M0,158 Q60,148 120,158 Q180,168 240,158 Q300,148 360,158 Q380,154 400,158 L400,200 L0,200Z" fill="#29b6f6" opacity=".3"/>
+      {/* Birds */}
+      <g className="lo1b"><path d="M130,75 Q138,69 146,75" fill="none" stroke="#5d4037" strokeWidth="1.5" strokeLinecap="round" opacity=".5"/></g>
+      <g className="lo1b" style={{animationDelay:'.7s'}}><path d="M155,65 Q164,59 173,65" fill="none" stroke="#5d4037" strokeWidth="1.5" strokeLinecap="round" opacity=".4"/></g>
+      <g className="lo1b" style={{animationDelay:'1.3s'}}><path d="M100,82 Q107,77 114,82" fill="none" stroke="#5d4037" strokeWidth="1.2" strokeLinecap="round" opacity=".35"/></g>
+      <text x="200" y="193" fontFamily="Georgia,serif" fontSize="11" fill="rgba(90,50,20,.35)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // 2: Bright terrace / rooftop day
+    <svg key="l2" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%',height:'auto' }}>
+      <defs><linearGradient id="lr2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#e3f2fd"/><stop offset="100%" stopColor="#bbdefb"/></linearGradient><style>{`.lr2c{animation:lr2C 7s ease-in-out infinite}.lr2l{animation:lr2L 3s ease-in-out infinite}@keyframes lr2C{0%,100%{transform:translateX(0)}50%{transform:translateX(12px)}}@keyframes lr2L{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}`}</style></defs>
+      <rect width="400" height="200" fill="url(#lr2)"/>
+      {/* Clouds */}
+      <g className="lr2c"><ellipse cx="100" cy="35" rx="35" ry="14" fill="white" opacity=".8"/><ellipse cx="125" cy="28" rx="25" ry="12" fill="white" opacity=".7"/></g>
+      <g className="lr2c" style={{animationDelay:'2s'}}><ellipse cx="310" cy="45" rx="28" ry="11" fill="white" opacity=".6"/><ellipse cx="335" cy="38" rx="20" ry="9" fill="white" opacity=".55"/></g>
+      {/* City horizon light */}
+      <path d="M0,130 L15,100 L30,115 L55,85 L70,100 L95,90 L110,108 L135,95 L150,112 L400,112 L400,170 L0,170Z" fill="#90a4ae" opacity=".2"/>
+      {/* Terrace */}
+      <rect x="0" y="155" width="400" height="45" fill="#f5f0e8"/>
+      <line x1="0" y1="158" x2="400" y2="158" stroke="#d7ccc8" strokeWidth="2"/>
+      {[0,50,100,150,200,250,300,350,400].map((x,i)=>(<line key={i} x1={x} y1="158" x2={x} y2="185" stroke="#bcaaa4" strokeWidth="1.2"/>))}
+      {/* Lanterns day */}
+      <g className="lr2l" style={{transformOrigin:'150px 155px'}}><ellipse cx="150" cy="153" rx="7" ry="9" fill="#e65100" opacity=".25"/><circle cx="150" cy="148" r="3" fill="#ff8f00" opacity=".3"/></g>
+      <g className="lr2l" style={{transformOrigin:'260px 155px',animationDelay:'1s'}}><ellipse cx="260" cy="153" rx="7" ry="9" fill="#e65100" opacity=".2"/><circle cx="260" cy="148" r="3" fill="#ff8f00" opacity=".25"/></g>
+      {/* Table + plant */}
+      <ellipse cx="200" cy="175" rx="30" ry="6" fill="#d7ccc8"/><line x1="200" y1="175" x2="200" y2="198" stroke="#bcaaa4" strokeWidth="3"/>
+      <circle cx="340" cy="148" r="10" fill="#66bb6a" opacity=".5"/>
+      <text x="200" y="197" fontFamily="Georgia,serif" fontSize="10" fill="rgba(90,50,20,.3)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // 3: Bright forest / meadow morning
+    <svg key="l3" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%',height:'auto' }}>
+      <defs><linearGradient id="lf3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#e8f5e9"/><stop offset="60%" stopColor="#c8e6c9"/><stop offset="100%" stopColor="#a5d6a7"/></linearGradient><style>{`.lf3l{animation:lf3L 4s ease-in-out infinite}.lf3b{animation:lf3B 3s ease-in-out infinite}.lf3f{animation:lf3F 6s linear infinite}@keyframes lf3L{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateX(3px)}}@keyframes lf3B{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes lf3F{0%{transform:translateX(-20px)}100%{transform:translateX(440px)}}`}</style></defs>
+      <rect width="400" height="200" fill="url(#lf3)"/>
+      {/* Sun glow */}
+      <circle cx="200" cy="60" r="30" fill="#fff9c4" opacity=".5"/>
+      <circle cx="200" cy="60" r="18" fill="#fff176" opacity=".6"/>
+      {/* Trees light */}
+      <path d="M0,200 L25,95 L50,200Z" fill="#388e3c" opacity=".4"/>
+      <path d="M15,200 L45,78 L75,200Z" fill="#43a047" opacity=".35"/>
+      <path d="M380,200 L355,95 L330,200Z" fill="#388e3c" opacity=".4"/>
+      <path d="M365,200 L335,78 L305,200Z" fill="#43a047" opacity=".35"/>
+      {/* Meadow path */}
+      <path d="M165,200 Q183,148 196,110 Q200,95 204,110 Q217,148 235,200Z" fill="#81c784" opacity=".3"/>
+      {/* Floating leaves */}
+      <g className="lf3l" style={{transformOrigin:'120px 100px'}}><ellipse cx="120" cy="100" rx="10" ry="5" fill="#66bb6a" opacity=".5" transform="rotate(-30,120,100)"/></g>
+      <g className="lf3l" style={{transformOrigin:'280px 120px',animationDelay:'1s'}}><ellipse cx="280" cy="120" rx="8" ry="4" fill="#81c784" opacity=".45" transform="rotate(20,280,120)"/></g>
+      <g className="lf3l" style={{transformOrigin:'160px 150px',animationDelay:'2s'}}><ellipse cx="160" cy="150" rx="9" ry="4" fill="#a5d6a7" opacity=".4" transform="rotate(-15,160,150)"/></g>
+      {/* Butterfly */}
+      <g className="lf3f">
+        <ellipse cx="0" cy="100" rx="6" ry="4" fill="#f06292" opacity=".4" transform="rotate(-20,0,100)"/>
+        <ellipse cx="8" cy="100" rx="5" ry="3" fill="#f48fb1" opacity=".35" transform="rotate(20,8,100)"/>
+      </g>
+      {/* Birds */}
+      <g className="lf3b"><path d="M220,52 Q228,46 236,52" fill="none" stroke="#2e7d32" strokeWidth="1.5" strokeLinecap="round" opacity=".6"/></g>
+      <g className="lf3b" style={{animationDelay:'.8s'}}><path d="M248,45 Q255,39 262,45" fill="none" stroke="#388e3c" strokeWidth="1.5" strokeLinecap="round" opacity=".5"/></g>
+      <text x="200" y="193" fontFamily="Georgia,serif" fontSize="11" fill="rgba(27,80,27,.35)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // 4: Desert at golden hour
+    <svg key="l4" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%',height:'auto' }}>
+      <defs><linearGradient id="ld4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fff8e1"/><stop offset="50%" stopColor="#ffe0b2"/><stop offset="100%" stopColor="#ffccbc"/></linearGradient><style>{`.ld4c{animation:ld4C 4s ease-in-out infinite}.ld4b{animation:ld4B 3s ease-in-out infinite}@keyframes ld4C{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}@keyframes ld4B{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}`}</style></defs>
+      <rect width="400" height="200" fill="url(#ld4)"/>
+      {/* Sun */}
+      <circle cx="200" cy="70" r="28" fill="#ff8f00" opacity=".25"/>
+      <circle cx="200" cy="70" r="18" fill="#ffb300" opacity=".5"/>
+      <circle cx="200" cy="70" r="11" fill="#ffd54f" opacity=".8"/>
+      {/* Heat shimmer lines */}
+      <path d="M80,130 Q120,126 160,130" fill="none" stroke="#ff8f00" strokeWidth="1" opacity=".15"/>
+      <path d="M240,135 Q280,131 320,135" fill="none" stroke="#ff8f00" strokeWidth="1" opacity=".12"/>
+      {/* Sand dunes */}
+      <path d="M0,148 Q100,120 200,142 Q300,162 400,138 L400,200 L0,200Z" fill="#ffcc80" opacity=".7"/>
+      <path d="M0,162 Q80,148 180,160 Q280,172 400,155 L400,200 L0,200Z" fill="#ffb74d" opacity=".5"/>
+      <path d="M0,175 Q120,165 250,175 Q340,182 400,172 L400,200 L0,200Z" fill="#ffa726" opacity=".3"/>
+      {/* Cactus light */}
+      <g className="ld4c" style={{transformOrigin:'70px 148px'}}>
+        <rect x="67" y="118" width="6" height="30" fill="#558b2f" opacity=".6" rx="3"/>
+        <rect x="55" y="130" width="14" height="4" fill="#558b2f" opacity=".5" rx="2"/>
+        <rect x="69" y="124" width="5" height="12" fill="#558b2f" opacity=".5" rx="2"/>
+      </g>
+      <g className="ld4c" style={{transformOrigin:'330px 148px',animationDelay:'.5s'}}>
+        <rect x="327" y="122" width="5" height="26" fill="#558b2f" opacity=".55" rx="2"/>
+        <rect x="318" y="134" width="11" height="4" fill="#558b2f" opacity=".45" rx="2"/>
+      </g>
+      {/* Birds */}
+      <g className="ld4b"><path d="M160,65 Q168,59 176,65" fill="none" stroke="#5d4037" strokeWidth="1.5" strokeLinecap="round" opacity=".5"/></g>
+      <g className="ld4b" style={{animationDelay:'.8s'}}><path d="M225,58 Q232,52 239,58" fill="none" stroke="#5d4037" strokeWidth="1.3" strokeLinecap="round" opacity=".4"/></g>
+      <text x="200" y="194" fontFamily="Georgia,serif" fontSize="11" fill="rgba(90,40,10,.3)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+
+    // 5: Rooftop / terrace golden morning (same as 2 but warmer)
+    <svg key="l5" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%',height:'auto' }}>
+      <defs><linearGradient id="lrt5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fce4ec"/><stop offset="100%" stopColor="#f8bbd0"/></linearGradient><style>{`.lrt5c{animation:lrt5C 7s ease-in-out infinite}.lrt5l{animation:lrt5L 3s ease-in-out infinite}@keyframes lrt5C{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}@keyframes lrt5L{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}`}</style></defs>
+      <rect width="400" height="200" fill="url(#lrt5)"/>
+      {/* Clouds pink */}
+      <g className="lrt5c"><ellipse cx="90" cy="38" rx="32" ry="13" fill="white" opacity=".7"/><ellipse cx="115" cy="30" rx="22" ry="11" fill="white" opacity=".6"/></g>
+      <g className="lrt5c" style={{animationDelay:'2.5s'}}><ellipse cx="320" cy="45" rx="26" ry="10" fill="white" opacity=".55"/></g>
+      {/* City soft */}
+      <path d="M0,130 L18,102 L33,116 L58,88 L73,103 L98,93 L400,115 L400,170 L0,170Z" fill="#f48fb1" opacity=".12"/>
+      {/* Terrace */}
+      <rect x="0" y="155" width="400" height="45" fill="#fce4ec"/>
+      <line x1="0" y1="158" x2="400" y2="158" stroke="#f48fb1" strokeWidth="1.5"/>
+      {[0,50,100,150,200,250,300,350,400].map((x,i)=>(<line key={i} x1={x} y1="158" x2={x} y2="185" stroke="#f8bbd0" strokeWidth="1.2"/>))}
+      {/* Flowers on terrace */}
+      <circle cx="80" cy="150" r="6" fill="#e91e63" opacity=".3"/>
+      <circle cx="320" cy="150" r="6" fill="#e91e63" opacity=".3"/>
+      <circle cx="200" cy="150" r="5" fill="#f06292" opacity=".25"/>
+      {/* Lanterns pink */}
+      <g className="lrt5l" style={{transformOrigin:'150px 155px'}}><ellipse cx="150" cy="153" rx="7" ry="9" fill="#e91e63" opacity=".2"/><circle cx="150" cy="148" r="3" fill="#f06292" opacity=".25"/></g>
+      <text x="200" y="197" fontFamily="Georgia,serif" fontSize="10" fill="rgba(130,20,60,.3)" textAnchor="middle" fontStyle="italic">{loc}</text>
+    </svg>,
+  ];
+
+  if (light) return lightIllustrations[s] || lightIllustrations[0];
+
   const illustrations = [
     <svg key="0" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%',height:'auto' }}>
       <defs><linearGradient id="sky0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#0a0a0a"/><stop offset="100%" stopColor="#1a2a1a"/></linearGradient><style>{`.m0s{animation:mTw 2s ease-in-out infinite alternate}.m0b{animation:mBd 3s ease-in-out infinite}@keyframes mTw{0%{opacity:.2}100%{opacity:1}}@keyframes mBd{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}`}</style></defs>
@@ -234,25 +391,25 @@ OUTPUT: plain prose only. No headers. No bullet points. No hashtags.`,
   // Card themes: illustration index + colour palette
   const CARD_THEMES = [
     // Dark themes
-    { label: 'Night Mountains', scene: 0, bg: '#111110',   accent: '#2e7d32', text: 'rgba(255,255,255,.88)', border: '#2e7d32' },
-    { label: 'Ocean Moon',      scene: 1, bg: '#0d1f1a',   accent: '#4db6ac', text: 'rgba(255,255,255,.88)', border: '#4db6ac' },
-    { label: 'City Dusk',       scene: 2, bg: '#0a0a12',   accent: '#7c6af7', text: 'rgba(255,255,255,.88)', border: '#7c6af7' },
-    { label: 'Desert Stars',    scene: 4, bg: '#150e05',   accent: '#ffa726', text: 'rgba(255,255,255,.88)', border: '#ffa726' },
-    { label: 'Rooftop Night',   scene: 5, bg: '#050510',   accent: '#ab47bc', text: 'rgba(255,255,255,.88)', border: '#ab47bc' },
-    // Light / bright themes
-    { label: 'Parchment',       scene: 0, bg: '#f5f0e8',   accent: '#2e7d32', text: '#2a1a0a',              border: '#2e7d32' },
-    { label: 'Sand & Ink',      scene: 4, bg: '#fdf6e3',   accent: '#8b4513', text: '#2a1a0a',              border: '#8b4513' },
-    { label: 'Sage Morning',    scene: 3, bg: '#e8f5e9',   accent: '#1b5e20', text: '#1b2a1b',              border: '#1b5e20' },
-    { label: 'Golden Hour',     scene: 1, bg: '#fff8e1',   accent: '#e65100', text: '#3e1a00',              border: '#e65100' },
-    { label: 'Rose Dusk',       scene: 5, bg: '#fce4ec',   accent: '#880e4f', text: '#2a0a18',              border: '#880e4f' },
-    { label: 'Sky Blue',        scene: 0, bg: '#e3f2fd',   accent: '#1565c0', text: '#0d1a2e',              border: '#1565c0' },
-    { label: 'Lavender',        scene: 2, bg: '#ede7f6',   accent: '#4527a0', text: '#1a0a2e',              border: '#4527a0' },
-    { label: 'Warm White',      scene: 3, bg: '#ffffff',   accent: '#2e7d32', text: '#111110',              border: '#2e7d32' },
-    { label: 'Terracotta',      scene: 4, bg: '#fbe9e7',   accent: '#bf360c', text: '#2a0e06',              border: '#bf360c' },
+    { label: 'Night Mountains', scene: 0, bg: '#111110',   accent: '#2e7d32', text: 'rgba(255,255,255,.88)', border: '#2e7d32', light: false },
+    { label: 'Ocean Moon',      scene: 1, bg: '#0d1f1a',   accent: '#4db6ac', text: 'rgba(255,255,255,.88)', border: '#4db6ac', light: false },
+    { label: 'City Dusk',       scene: 2, bg: '#0a0a12',   accent: '#7c6af7', text: 'rgba(255,255,255,.88)', border: '#7c6af7', light: false },
+    { label: 'Desert Stars',    scene: 4, bg: '#150e05',   accent: '#ffa726', text: 'rgba(255,255,255,.88)', border: '#ffa726', light: false },
+    { label: 'Rooftop Night',   scene: 5, bg: '#050510',   accent: '#ab47bc', text: 'rgba(255,255,255,.88)', border: '#ab47bc', light: false },
+    // Light / bright themes — use daytime illustrations
+    { label: 'Parchment',       scene: 0, bg: '#f5f0e8',   accent: '#2e7d32', text: '#2a1a0a',              border: '#2e7d32', light: true },
+    { label: 'Sand & Ink',      scene: 4, bg: '#fdf6e3',   accent: '#8b4513', text: '#2a1a0a',              border: '#8b4513', light: true },
+    { label: 'Sage Morning',    scene: 3, bg: '#e8f5e9',   accent: '#1b5e20', text: '#1b2a1b',              border: '#1b5e20', light: true },
+    { label: 'Golden Hour',     scene: 1, bg: '#fff8e1',   accent: '#e65100', text: '#3e1a00',              border: '#e65100', light: true },
+    { label: 'Rose Dusk',       scene: 5, bg: '#fce4ec',   accent: '#880e4f', text: '#2a0a18',              border: '#880e4f', light: true },
+    { label: 'Sky Blue',        scene: 2, bg: '#e3f2fd',   accent: '#1565c0', text: '#0d1a2e',              border: '#1565c0', light: true },
+    { label: 'Lavender',        scene: 2, bg: '#ede7f6',   accent: '#4527a0', text: '#1a0a2e',              border: '#4527a0', light: true },
+    { label: 'Warm White',      scene: 3, bg: '#ffffff',   accent: '#2e7d32', text: '#111110',              border: '#2e7d32', light: true },
+    { label: 'Terracotta',      scene: 4, bg: '#fbe9e7',   accent: '#bf360c', text: '#2a0e06',              border: '#bf360c', light: true },
   ];
 
   const theme = CARD_THEMES[cardTheme % CARD_THEMES.length];
-  const isLight = ['#f5f0e8','#fdf6e3','#e8f5e9'].includes(theme.bg);
+  const isLight = theme.light ?? false;
 
   const STARS = [
     { top: '12%', left: '4%', size: 2.5, dur: '2.8s', delay: '0s' },
@@ -380,7 +537,7 @@ OUTPUT: plain prose only. No headers. No bullet points. No hashtags.`,
                         {/* Mini preview */}
                         <div style={{ background: t.bg, height: 50, position: 'relative', overflow: 'hidden' }}>
                           <div style={{ position: 'absolute', inset: 0, transform: 'scale(0.25)', transformOrigin: 'top left', width: '400%', height: '400%', pointerEvents: 'none' }}>
-                            <MemoirIllustration seed={t.scene} locations={locations} />
+                            <MemoirIllustration seed={t.scene} locations={locations} light={t.light} />
                           </div>
                         </div>
                         <div style={{ background: t.bg, padding: '5px 6px', borderTop: `2px solid ${t.accent}` }}>
@@ -395,7 +552,7 @@ OUTPUT: plain prose only. No headers. No bullet points. No hashtags.`,
               {/* The shareable card — captured as image */}
               <div ref={cardRef}>
                 <div style={{ borderRadius: '16px 16px 0 0', overflow: 'hidden', lineHeight: 0 }}>
-                  <MemoirIllustration seed={theme.scene} locations={locations} />
+                  <MemoirIllustration seed={theme.scene} locations={locations} light={theme.light} />
                 </div>
                 <div style={{ background: theme.bg, borderRadius: '0 0 16px 16px', padding: '28px 28px 24px', borderTop: `3px solid ${theme.accent}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
