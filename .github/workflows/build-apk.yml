@@ -34,10 +34,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install TypeScript (required by Capacitor)
+      - name: Install TypeScript
         run: npm install -D typescript
 
-      - name: Build web assets (mobile base path)
+      - name: Build web assets
         run: CAPACITOR=true npx vite build
 
       - name: Sync Capacitor
@@ -47,56 +47,39 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Build debug APK
-        run: |
-          cd android
-          ./gradlew assembleDebug
+        run: cd android && ./gradlew assembleDebug --no-daemon -q
 
-      - name: Build release APK (unsigned)
-        run: |
-          cd android
-          ./gradlew assembleRelease
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk safarnama.apk
 
-      - name: Get version from package.json
-        id: version
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Delete old latest release
+        run: gh release delete latest --yes || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get short SHA
-        id: sha
-        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Delete old latest tag
+        run: git push origin :refs/tags/latest || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload debug APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: safarnama-debug-${{ steps.sha.outputs.sha }}
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
-
-      - name: Upload release APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: safarnama-release-unsigned-${{ steps.sha.outputs.sha }}
-          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
-          retention-days: 30
-
-      - name: Create GitHub Release
+      - name: Create latest release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}-${{ steps.sha.outputs.sha }}
-          name: Safarnama v${{ steps.version.outputs.version }} (${{ steps.sha.outputs.sha }})
+          tag_name: latest
+          name: Safarnama — Latest Build
           body: |
-            ## Safarnama APK
+            ## Install Safarnama on Android
 
-            **Debug APK** — install directly for testing (no keystore needed).
-            **Release APK (unsigned)** — requires signing before distribution on Play Store.
+            1. Download `safarnama.apk` below
+            2. On your phone: Settings → Security → enable **Install from unknown sources**
+            3. Open the downloaded APK and tap Install
 
-            ### Install on Android
-            1. Download `app-debug.apk`
-            2. Enable *Install from unknown sources* in Settings → Security
-            3. Open the downloaded APK to install
+            **Install on iPhone:** https://neha-rani-r.github.io/safarnama/install.html
 
-            Built from commit `${{ steps.sha.outputs.sha }}`
-          files: |
-            android/app/build/outputs/apk/debug/app-debug.apk
-            android/app/build/outputs/apk/release/app-release-unsigned.apk
+            ---
+            Built automatically from latest code
+          files: safarnama.apk
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
