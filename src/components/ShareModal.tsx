@@ -432,11 +432,23 @@ export default function ShareModal({ entry, onClose, showToast }: ShareModalProp
   const scene = SCENES[entry.prompt] || SCENES.senses;
 
   const cardStyles = [
-    { bg: 'linear-gradient(160deg,#0a0f0a,#111a11,#0a0a0f)', accent: '#2e7d32' },
-    { bg: 'linear-gradient(160deg,#0f0a05,#1a1208,#0a0805)', accent: '#8B6914' },
-    { bg: 'linear-gradient(160deg,#050510,#0a0818,#080512)', accent: '#4a2d8a' },
+    // Dark
+    { label: 'Forest Night',  bg: 'linear-gradient(160deg,#0a0f0a,#111a11,#0a0a0f)', accent: '#2e7d32',  text: 'rgba(255,255,255,.88)', sub: 'rgba(255,255,255,.25)', border: 'rgba(255,255,255,.08)', dark: true },
+    { label: 'Amber Dusk',    bg: 'linear-gradient(160deg,#0f0a05,#1a1208,#0a0805)', accent: '#ffa726',  text: 'rgba(255,255,255,.88)', sub: 'rgba(255,255,255,.25)', border: 'rgba(255,255,255,.08)', dark: true },
+    { label: 'Midnight Blue', bg: 'linear-gradient(160deg,#050510,#0a0818,#080512)', accent: '#7c6af7',  text: 'rgba(255,255,255,.88)', sub: 'rgba(255,255,255,.25)', border: 'rgba(255,255,255,.08)', dark: true },
+    { label: 'Rose Night',    bg: 'linear-gradient(160deg,#120008,#1a0010,#0a0008)', accent: '#f06292',  text: 'rgba(255,255,255,.88)', sub: 'rgba(255,255,255,.25)', border: 'rgba(255,255,255,.08)', dark: true },
+    // Light
+    { label: 'Parchment',     bg: '#f5f0e8',  accent: '#2e7d32',  text: '#2a1a0a',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Golden Hour',   bg: '#fff8e1',  accent: '#e65100',  text: '#3e1a00',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Sage',          bg: '#e8f5e9',  accent: '#1b5e20',  text: '#1b2a1b',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Rose Bloom',    bg: '#fce4ec',  accent: '#880e4f',  text: '#2a0a18',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Sky',           bg: '#e3f2fd',  accent: '#1565c0',  text: '#0d1a2e',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Lavender',      bg: '#ede7f6',  accent: '#4527a0',  text: '#1a0a2e',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Warm White',    bg: '#ffffff',  accent: '#2e7d32',  text: '#111110',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Terracotta',    bg: '#fbe9e7',  accent: '#bf360c',  text: '#2a0e06',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
+    { label: 'Sand & Ink',    bg: '#fdf6e3',  accent: '#8b4513',  text: '#2a1a0a',  sub: 'rgba(0,0,0,.3)',  border: 'rgba(0,0,0,.08)', dark: false },
   ];
-  const cs = cardStyles[cardStyle % 3];
+  const cs = cardStyles[cardStyle % cardStyles.length];
 
   return (
     <div
@@ -468,41 +480,56 @@ export default function ShareModal({ entry, onClose, showToast }: ShareModalProp
           {/* Watermark compass */}
           <div style={{ position: 'absolute', right: -24, bottom: -24, opacity: 0.04, pointerEvents: 'none' }}>
             <svg width="120" height="120" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="36" cy="36" r="32" fill="none" stroke="white" strokeWidth="2"/>
-              <path d="M36,8 L30,30 L36,26 L42,30 Z" fill="white"/>
-              <path d="M36,64 L30,42 L36,46 L42,42 Z" fill="white" opacity=".4"/>
-              <circle cx="36" cy="36" r="5" fill="white"/>
+              {`<circle cx="36" cy="36" r="32" fill="none" stroke="${cs.dark ? 'white' : cs.accent}" strokeWidth="2"/><path d="M36,8 L30,30 L36,26 L42,30 Z" fill="${cs.dark ? 'white' : cs.accent}"/><path d="M36,64 L30,42 L36,46 L42,42 Z" fill="${cs.dark ? 'white' : cs.accent}" opacity=".4"/><circle cx="36" cy="36" r="5" fill="${cs.dark ? 'white' : cs.accent}"/>`}
             </svg>
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 22, fontStyle: 'italic', color: '#fff', marginBottom: 6, lineHeight: 1.2 }}>
+            <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 22, fontStyle: 'italic', color: cs.text, marginBottom: 6, lineHeight: 1.2 }}>
               {entry.location}
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span style={{ fontFamily: 'var(--sans)', fontSize: 10, color: cs.accent, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>{prompt?.why}</span>
-              <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-              <span style={{ fontFamily: 'var(--sans)', fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 300 }}>{entry.date}</span>
+              <span style={{ color: cs.sub }}>·</span>
+              <span style={{ fontFamily: 'var(--sans)', fontSize: 10, color: cs.sub, fontWeight: 300 }}>{entry.date}</span>
             </div>
           </div>
 
-          <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 14, lineHeight: 1.85, color: 'rgba(255,255,255,0.85)', marginBottom: 20 }}>
+          <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 14, lineHeight: 1.85, color: cs.text, marginBottom: 20 }}>
             "{entry.text.length > 240 ? entry.text.slice(0, 240) + '…' : entry.text}"
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1px solid ${cs.border}`, paddingTop: 14 }}>
             <div>
               <div style={{ fontFamily: 'var(--sans)', fontSize: 11, fontWeight: 900, letterSpacing: '0.14em', color: cs.accent }}>SAFARNAMA</div>
-              <div style={{ fontFamily: 'var(--sans)', fontSize: 9, color: 'rgba(255,255,255,0.2)', marginTop: 1 }}>सफ़रनामा · travel journal</div>
+              <div style={{ fontFamily: 'var(--sans)', fontSize: 9, color: cs.sub, marginTop: 1 }}>सफ़रनामा · travel journal</div>
             </div>
             {/* Style switcher */}
-            <button onClick={() => setCardStyle(c => c + 1)} style={{
-              fontFamily: 'var(--sans)', fontSize: 10, color: 'rgba(255,255,255,0.3)',
-              background: 'none', border: '1px solid rgba(255,255,255,0.1)',
-              padding: '4px 10px', borderRadius: 20, cursor: 'pointer'
-            }}>
-              style ◎
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              {cardStyles.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCardStyle(i)}
+                  title={s.label}
+                  style={{
+                    width: 16, height: 16, borderRadius: '50%',
+                    background: s.dark ? s.bg : s.bg,
+                    border: `2px solid ${cardStyle % cardStyles.length === i ? cs.accent : 'transparent'}`,
+                    cursor: 'pointer',
+                    padding: 0,
+                    outline: 'none',
+                    flexShrink: 0,
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div style={{ position: 'absolute', inset: 0, background: s.dark ? s.bg : s.bg, borderRadius: '50%' }} />
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.accent }} />
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
