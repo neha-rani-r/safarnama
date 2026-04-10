@@ -11,7 +11,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "build:mobile": "CAPACITOR=true vite build",
-    "deploy:mobile": "CAPACITOR=true vite build && npx cap sync"
+    "deploy:mobile": "CAPACITOR=true vite build && npx cap sync",
+    "build:apk": "CAPACITOR=true vite build && npx cap sync android"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.0",
