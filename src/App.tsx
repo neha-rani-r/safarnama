@@ -536,6 +536,7 @@ export default function App() {
   const [location, setLocation] = useState('');
   const [selectedPrompt, setSelectedPrompt] = useState(0);
   const [entryText, setEntryText] = useState('');
+  const [interimText, setInterimText] = useState('');
   const [entries, setEntries] = useState<Entry[]>([
     {
       id: 1,
@@ -566,8 +567,9 @@ export default function App() {
   const { getPosition } = useGeoLocation();
 
   const { isRecording, startRecording, stopRecording, resetTranscript } = useVoiceInput({
-    onTranscript: (text) => {
-      setEntryText(text);
+    onTranscript: (finalText, interim) => {
+      setEntryText(finalText);
+      setInterimText(interim);
     },
     showToast,
   });
@@ -595,6 +597,7 @@ export default function App() {
     setEntries((prev) => [newEntry, ...prev]);
     resetTranscript();
     setEntryText('');
+    setInterimText('');
     setLocation('');
     showToast('Entry saved ✓');
 
@@ -722,31 +725,45 @@ export default function App() {
                   </svg>
                 </div>
 
-                <textarea
-                  className="entry-area"
-                  placeholder="Write freely, or use voice below..."
-                  value={entryText}
-                  onChange={(e) => setEntryText(e.target.value)}
-                />
+                {/* Textarea + live interim overlay */}
+                <div style={{ position: 'relative' }}>
+                  <textarea
+                    className="entry-area"
+                    placeholder="Write freely, or use voice below..."
+                    value={entryText}
+                    onChange={(e) => { setEntryText(e.target.value); setInterimText(''); }}
+                    style={{ paddingBottom: interimText ? 48 : 16 }}
+                  />
+                  {/* Live transcript while speaking */}
+                  {isRecording && (
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0,
+                      padding: '8px 4px 16px',
+                      fontFamily: 'var(--serif)', fontSize: 17, lineHeight: 1.85,
+                      color: '#2e7d32', fontStyle: 'italic', opacity: 0.7,
+                      pointerEvents: 'none',
+                      minHeight: 32,
+                    }}>
+                      {interimText && <span>{interimText}<span style={{ animation: 'pulse 1s infinite', display: 'inline-block', marginLeft: 2 }}>|</span></span>}
+                      {!interimText && <span style={{ opacity: 0.4, fontSize: 13 }}>listening...</span>}
+                    </div>
+                  )}
+                </div>
 
                 <div className="entry-actions">
                   <button
                     className={`voice-btn ${isRecording ? 'recording' : ''}`}
                     onClick={isRecording ? stopRecording : startRecording}
-                    title={isRecording ? 'Pause recording' : entryText.length > 0 ? 'Resume recording' : 'Start voice recording'}
                   >
                     <span className={`mic-dot ${isRecording ? 'recording' : ''}`} />
                     {isRecording ? 'Pause' : entryText.length > 0 ? 'Resume' : 'Speak'}
                   </button>
-                  <button
-                    className="save-btn"
-                    onClick={saveEntry}
-                  >
+                  <button className="save-btn" onClick={saveEntry}>
                     Save Entry
                   </button>
                 </div>
 
-                {entryText.length > 10 && (
+                {entryText.length > 10 && !isRecording && (
                   <div className="write-tip">
                     <span style={{ color: '#2e7d32' }}>◈</span>
                     Tip: write what you felt, not just what you saw
