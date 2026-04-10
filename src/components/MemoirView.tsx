@@ -233,15 +233,22 @@ OUTPUT: plain prose only. No headers. No bullet points. No hashtags.`,
 
   // Card themes: illustration index + colour palette
   const CARD_THEMES = [
-    { label: 'Night Mountains', scene: 0, bg: '#111110', accent: '#2e7d32', text: 'rgba(255,255,255,.88)', border: '#2e7d32' },
-    { label: 'Ocean Moon',      scene: 1, bg: '#0d1f1a', accent: '#4db6ac', text: 'rgba(255,255,255,.88)', border: '#4db6ac' },
-    { label: 'City Dusk',       scene: 2, bg: '#0a0a12', accent: '#7c6af7', text: 'rgba(255,255,255,.88)', border: '#7c6af7' },
-    { label: 'Forest Path',     scene: 3, bg: '#060d06', accent: '#66bb6a', text: 'rgba(255,255,255,.88)', border: '#66bb6a' },
-    { label: 'Desert Stars',    scene: 4, bg: '#150e05', accent: '#ffa726', text: 'rgba(255,255,255,.88)', border: '#ffa726' },
-    { label: 'Rooftop Night',   scene: 5, bg: '#050510', accent: '#ab47bc', text: 'rgba(255,255,255,.88)', border: '#ab47bc' },
-    { label: 'Parchment',       scene: 0, bg: '#f5f0e8', accent: '#2e7d32', text: '#2a1a0a',              border: '#2e7d32' },
-    { label: 'Sand & Ink',      scene: 4, bg: '#fdf6e3', accent: '#8b4513', text: '#2a1a0a',              border: '#8b4513' },
-    { label: 'Sage',            scene: 3, bg: '#e8f5e9', accent: '#1b5e20', text: '#1b2a1b',              border: '#1b5e20' },
+    // Dark themes
+    { label: 'Night Mountains', scene: 0, bg: '#111110',   accent: '#2e7d32', text: 'rgba(255,255,255,.88)', border: '#2e7d32' },
+    { label: 'Ocean Moon',      scene: 1, bg: '#0d1f1a',   accent: '#4db6ac', text: 'rgba(255,255,255,.88)', border: '#4db6ac' },
+    { label: 'City Dusk',       scene: 2, bg: '#0a0a12',   accent: '#7c6af7', text: 'rgba(255,255,255,.88)', border: '#7c6af7' },
+    { label: 'Desert Stars',    scene: 4, bg: '#150e05',   accent: '#ffa726', text: 'rgba(255,255,255,.88)', border: '#ffa726' },
+    { label: 'Rooftop Night',   scene: 5, bg: '#050510',   accent: '#ab47bc', text: 'rgba(255,255,255,.88)', border: '#ab47bc' },
+    // Light / bright themes
+    { label: 'Parchment',       scene: 0, bg: '#f5f0e8',   accent: '#2e7d32', text: '#2a1a0a',              border: '#2e7d32' },
+    { label: 'Sand & Ink',      scene: 4, bg: '#fdf6e3',   accent: '#8b4513', text: '#2a1a0a',              border: '#8b4513' },
+    { label: 'Sage Morning',    scene: 3, bg: '#e8f5e9',   accent: '#1b5e20', text: '#1b2a1b',              border: '#1b5e20' },
+    { label: 'Golden Hour',     scene: 1, bg: '#fff8e1',   accent: '#e65100', text: '#3e1a00',              border: '#e65100' },
+    { label: 'Rose Dusk',       scene: 5, bg: '#fce4ec',   accent: '#880e4f', text: '#2a0a18',              border: '#880e4f' },
+    { label: 'Sky Blue',        scene: 0, bg: '#e3f2fd',   accent: '#1565c0', text: '#0d1a2e',              border: '#1565c0' },
+    { label: 'Lavender',        scene: 2, bg: '#ede7f6',   accent: '#4527a0', text: '#1a0a2e',              border: '#4527a0' },
+    { label: 'Warm White',      scene: 3, bg: '#ffffff',   accent: '#2e7d32', text: '#111110',              border: '#2e7d32' },
+    { label: 'Terracotta',      scene: 4, bg: '#fbe9e7',   accent: '#bf360c', text: '#2a0e06',              border: '#bf360c' },
   ];
 
   const theme = CARD_THEMES[cardTheme % CARD_THEMES.length];
