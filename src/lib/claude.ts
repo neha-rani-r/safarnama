@@ -7,11 +7,27 @@ export async function callClaude(body: {
   messages: { role: string; content: string }[];
 }): Promise<string> {
   if (!WORKER_URL) throw new Error('VITE_CLOUDFLARE_WORKER_URL not set');
+
+  const groqBody = {
+    model: 'llama-3.3-70b-versatile',
+    max_tokens: body.max_tokens,
+    messages: [
+      { role: 'system', content: body.system },
+      ...body.messages,
+    ],
+  };
+
   const res = await fetch(WORKER_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(groqBody),
   });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Worker error ${res.status}: ${errText}`);
+  }
+
   const data = await res.json();
-  return data.content?.[0]?.text || '';
+  return data.choices?.[0]?.message?.content || '';
 }

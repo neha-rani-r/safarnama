@@ -574,7 +574,7 @@ export default function App() {
 
   const { isRecording, startRecording, stopRecording } = useVoiceInput({
     onTranscript: (text) => {
-      setEntryText((prev) => prev + (prev ? ' ' : '') + text);
+      setEntryText(text);
     },
     showToast,
   });
