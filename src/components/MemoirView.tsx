@@ -99,6 +99,8 @@ export default function MemoirView({ entries, showToast }: MemoirViewProps) {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [illustrationSeed, setIllustrationSeed] = useState(0);
+  const [cardTheme, setCardTheme] = useState(0);
+  const [showIllustrationPicker, setShowIllustrationPicker] = useState(false);
   const [showSharePanel, setShowSharePanel] = useState(false);
   const [capturing, setCapturing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -229,6 +231,22 @@ OUTPUT: plain prose only. No headers. No bullet points. No hashtags.`,
 
   const postText = `${memoir}\n\n📍 ${allLocations}\n\n#traveldiary #slowtravel #travelwriting #safarnama`;
 
+  // Card themes: illustration index + colour palette
+  const CARD_THEMES = [
+    { label: 'Night Mountains', scene: 0, bg: '#111110', accent: '#2e7d32', text: 'rgba(255,255,255,.88)', border: '#2e7d32' },
+    { label: 'Ocean Moon',      scene: 1, bg: '#0d1f1a', accent: '#4db6ac', text: 'rgba(255,255,255,.88)', border: '#4db6ac' },
+    { label: 'City Dusk',       scene: 2, bg: '#0a0a12', accent: '#7c6af7', text: 'rgba(255,255,255,.88)', border: '#7c6af7' },
+    { label: 'Forest Path',     scene: 3, bg: '#060d06', accent: '#66bb6a', text: 'rgba(255,255,255,.88)', border: '#66bb6a' },
+    { label: 'Desert Stars',    scene: 4, bg: '#150e05', accent: '#ffa726', text: 'rgba(255,255,255,.88)', border: '#ffa726' },
+    { label: 'Rooftop Night',   scene: 5, bg: '#050510', accent: '#ab47bc', text: 'rgba(255,255,255,.88)', border: '#ab47bc' },
+    { label: 'Parchment',       scene: 0, bg: '#f5f0e8', accent: '#2e7d32', text: '#2a1a0a',              border: '#2e7d32' },
+    { label: 'Sand & Ink',      scene: 4, bg: '#fdf6e3', accent: '#8b4513', text: '#2a1a0a',              border: '#8b4513' },
+    { label: 'Sage',            scene: 3, bg: '#e8f5e9', accent: '#1b5e20', text: '#1b2a1b',              border: '#1b5e20' },
+  ];
+
+  const theme = CARD_THEMES[cardTheme % CARD_THEMES.length];
+  const isLight = ['#f5f0e8','#fdf6e3','#e8f5e9'].includes(theme.bg);
+
   const STARS = [
     { top: '12%', left: '4%', size: 2.5, dur: '2.8s', delay: '0s' },
     { top: '65%', left: '10%', size: 2, dur: '3.5s', delay: '0.4s' },
@@ -328,30 +346,69 @@ OUTPUT: plain prose only. No headers. No bullet points. No hashtags.`,
             </div>
           ) : (
             <div>
+              {/* Style picker */}
+              <div style={{ marginBottom: 12 }}>
+                <button
+                  onClick={() => setShowIllustrationPicker(!showIllustrationPicker)}
+                  style={{ fontFamily: 'var(--sans)', fontSize: 11, fontWeight: 500, color: 'var(--muted)', background: 'none', border: '1px solid var(--border)', padding: '6px 14px', borderRadius: 100, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                >
+                  ◈ Change card style
+                  <span style={{ color: '#2e7d32' }}>{CARD_THEMES[cardTheme % CARD_THEMES.length].label}</span>
+                </button>
+
+                {showIllustrationPicker && (
+                  <div style={{ marginTop: 10, display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8 }}>
+                    {CARD_THEMES.map((t, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setCardTheme(i); setShowIllustrationPicker(false); }}
+                        style={{
+                          flexShrink: 0, width: 90, borderRadius: 10, overflow: 'hidden',
+                          border: `2px solid ${cardTheme % CARD_THEMES.length === i ? t.accent : 'transparent'}`,
+                          cursor: 'pointer', padding: 0, background: 'none',
+                          boxShadow: cardTheme % CARD_THEMES.length === i ? `0 0 0 2px ${t.accent}40` : 'none',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {/* Mini preview */}
+                        <div style={{ background: t.bg, height: 50, position: 'relative', overflow: 'hidden' }}>
+                          <div style={{ position: 'absolute', inset: 0, transform: 'scale(0.25)', transformOrigin: 'top left', width: '400%', height: '400%', pointerEvents: 'none' }}>
+                            <MemoirIllustration seed={t.scene} locations={locations} />
+                          </div>
+                        </div>
+                        <div style={{ background: t.bg, padding: '5px 6px', borderTop: `2px solid ${t.accent}` }}>
+                          <div style={{ fontFamily: 'var(--sans)', fontSize: 9, fontWeight: 600, color: t.accent, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 1.3 }}>{t.label}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* The shareable card — captured as image */}
               <div ref={cardRef}>
                 <div style={{ borderRadius: '16px 16px 0 0', overflow: 'hidden', lineHeight: 0 }}>
-                  <MemoirIllustration seed={illustrationSeed} locations={locations} />
+                  <MemoirIllustration seed={theme.scene} locations={locations} />
                 </div>
-                <div style={{ background: '#111110', borderRadius: '0 0 16px 16px', padding: '28px 28px 24px', borderTop: '3px solid #2e7d32' }}>
+                <div style={{ background: theme.bg, borderRadius: '0 0 16px 16px', padding: '28px 28px 24px', borderTop: `3px solid ${theme.accent}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
                     <svg width="14" height="14" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="36" cy="36" r="30" fill="none" stroke="#2e7d32" strokeWidth="3"/>
-                      <path d="M36,14 L30,32 L36,28 L42,32 Z" fill="#2e7d32"/>
-                      <circle cx="36" cy="36" r="4" fill="#2e7d32"/>
+                      <circle cx="36" cy="36" r="30" fill="none" stroke={theme.accent} strokeWidth="3"/>
+                      <path d="M36,14 L30,32 L36,28 L42,32 Z" fill={theme.accent}/>
+                      <circle cx="36" cy="36" r="4" fill={theme.accent}/>
                     </svg>
-                    <span style={{ fontFamily: 'var(--sans)', fontSize: 11, color: '#2e7d32', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 500 }}>{allLocations}</span>
+                    <span style={{ fontFamily: 'var(--sans)', fontSize: 11, color: theme.accent, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 500 }}>{allLocations}</span>
                   </div>
-                  <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 16, fontWeight: 400, lineHeight: 2, color: 'rgba(255,255,255,.88)', whiteSpace: 'pre-wrap', marginBottom: 24 }}>{memoir}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,.08)', paddingTop: 16 }}>
+                  <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 16, fontWeight: 400, lineHeight: 2, color: theme.text, whiteSpace: 'pre-wrap', marginBottom: 24 }}>{memoir}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1px solid ${isLight ? 'rgba(0,0,0,.1)' : 'rgba(255,255,255,.08)'}`, paddingTop: 16 }}>
                     <div>
-                      <div style={{ fontFamily: 'var(--sans)', fontSize: 13, fontWeight: 900, letterSpacing: '0.12em', color: '#2e7d32' }}>SAFARNAMA</div>
-                      <div style={{ fontFamily: 'var(--sans)', fontSize: 9, color: 'rgba(255,255,255,.2)', marginTop: 2 }}>सफ़रनामा · travel journal</div>
+                      <div style={{ fontFamily: 'var(--sans)', fontSize: 13, fontWeight: 900, letterSpacing: '0.12em', color: theme.accent }}>SAFARNAMA</div>
+                      <div style={{ fontFamily: 'var(--sans)', fontSize: 9, color: isLight ? 'rgba(0,0,0,.3)' : 'rgba(255,255,255,.2)', marginTop: 2 }}>सफ़रनामा · travel journal</div>
                     </div>
                     <svg width="20" height="20" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" opacity=".4">
-                      <circle cx="36" cy="36" r="30" fill="none" stroke="#2e7d32" strokeWidth="3"/>
-                      <path d="M36,14 L30,32 L36,28 L42,32 Z" fill="#2e7d32"/>
-                      <circle cx="36" cy="36" r="4" fill="#2e7d32"/>
+                      <circle cx="36" cy="36" r="30" fill="none" stroke={theme.accent} strokeWidth="3"/>
+                      <path d="M36,14 L30,32 L36,28 L42,32 Z" fill={theme.accent}/>
+                      <circle cx="36" cy="36" r="4" fill={theme.accent}/>
                     </svg>
                   </div>
                 </div>
