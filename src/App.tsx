@@ -733,9 +733,10 @@ export default function App() {
                   <button
                     className={`voice-btn ${isRecording ? 'recording' : ''}`}
                     onClick={isRecording ? stopRecording : startRecording}
+                    title={isRecording ? 'Pause recording' : entryText.length > 0 ? 'Resume recording' : 'Start voice recording'}
                   >
                     <span className={`mic-dot ${isRecording ? 'recording' : ''}`} />
-                    {isRecording ? '⏸ Pause' : entryText.length > 0 ? '▶ Resume speaking' : '◎ Speak your entry'}
+                    {isRecording ? 'Pause' : entryText.length > 0 ? 'Resume' : 'Speak'}
                   </button>
                   <button
                     className="save-btn"
