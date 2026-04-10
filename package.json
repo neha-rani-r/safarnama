@@ -9,9 +9,15 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "build:mobile": "CAPACITOR=true vite build",
+    "deploy:mobile": "CAPACITOR=true vite build && npx cap sync"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/ios": "^8.3.0",
     "html2canvas": "^1.4.1",
     "leaflet": "^1.9.4",
     "react": "^19.2.4",
